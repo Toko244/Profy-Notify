@@ -1,0 +1,22 @@
+  2024-09-05 11:37:28 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-05 11:37:29 App\Jobs\Triggers\RegisterJob ............ 832.95ms DONE
+  2024-09-05 13:42:06 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-05 13:42:07 App\Jobs\Triggers\RegisterJob ............ 621.07ms DONE
+  2024-09-05 13:42:07 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-05 13:42:07 App\Jobs\Triggers\RegisterJob ............. 15.72ms DONE
+  2024-09-05 14:05:43 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-05 14:05:44 App\Jobs\Triggers\RegisterJob ............ 462.85ms DONE
+  2024-09-05 14:05:44 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-05 14:05:44 App\Jobs\Triggers\RegisterJob ............. 16.99ms DONE
+  2024-09-09 14:04:29 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-09 14:04:30 App\Jobs\Triggers\RegisterJob .................. 1s DONE
+  2024-09-09 14:04:30 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-09 14:04:30 App\Jobs\Triggers\RegisterJob ............ 135.17ms DONE
+  2024-09-09 14:06:30 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-09 14:06:30 App\Jobs\Triggers\RegisterJob ............ 215.54ms DONE
+  2024-09-09 14:06:30 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-09 14:06:30 App\Jobs\Triggers\RegisterJob ............ 135.33ms DONE
+  2024-09-09 14:11:18 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-09 14:11:19 App\Jobs\Triggers\RegisterJob ............ 848.99ms DONE
+  2024-09-09 14:11:19 App\Jobs\Triggers\RegisterJob .................. RUNNING
+  2024-09-09 14:11:19 App\Jobs\Triggers\RegisterJob ............. 18.51ms DONE

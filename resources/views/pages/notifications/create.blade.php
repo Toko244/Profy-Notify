@@ -1,0 +1,48 @@
+@extends('layout.dashboard')
+
+@section('header')
+<div class="row">
+    <div class="col-sm-6">
+        <h3 class="mb-0 mt-0">Create Notifications</h3>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-end">
+            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('notifications.index') }}">Email Notifications</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                Create
+            </li>
+        </ol>
+    </div>
+</div>
+@endsection
+
+@section('content')
+<div class="row">
+    <div class="col-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h2 class="card-title">Email Notification</h2>
+            </div>
+            <form action="{{ route('notifications.store') }}" method="POST">
+                <div class="card-body row">
+                    @csrf
+                    @livewire('notification.form', [])
+                </div>
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary float-end">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('styles')
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+@endsection
+
+@section('scripts')
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+@endsection
