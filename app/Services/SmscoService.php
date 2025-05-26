@@ -34,7 +34,7 @@ class SmscoService
     {
         $to = preg_replace('#[^\d]*#si', '', $to);
 
-        $url = $this->getUrl('smsapi2', ['recipient' => $to, 'message' => $message]);
+        $url = $this->getUrl('sendsms', ['recipient' => $to, 'message' => $message]);
 
         $response = Http::get($url);
         dd($response->body());
