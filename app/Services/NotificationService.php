@@ -51,7 +51,13 @@ class NotificationService
             $content = str_replace('{first_name}', $customer['first_name'], $content);
             $content = str_replace('{last_name}', $customer['last_name'], $content);
 
-            $smscoService->send($phone, $content);
+            $result = $smscoService->send($phone, $content);
+
+            if ($result['success']) {
+                echo "SMS sent! Used credits: {$result['used_credits']}, SMS ID: {$result['sms_id']}";
+            } else {
+                echo "Failed to send SMS: {$result['message']}";
+            }
         }
     }
 }
