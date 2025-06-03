@@ -43,6 +43,8 @@ class OrderJob implements ShouldQueue
             case 'sms':
                 $notificationService->sms();
                 break;
+            case 'push':
+                $notificationService->push();
             default:
                 # code...
                 break;

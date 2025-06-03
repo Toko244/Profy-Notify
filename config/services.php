@@ -31,4 +31,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'onesignal' => [
+        'tasker' => [
+            'app_id'  => env('ONESIGNAL_TASKER_APP_ID'),
+            'api_key' => env('ONESIGNAL_TASKER_API_KEY'),
+        ],
+        'customer' => [
+            'app_id'  => env('ONESIGNAL_CUSTOMER_APP_ID'),
+            'api_key' => env('ONESIGNAL_CUSTOMER_API_KEY'),
+        ],
+    ],
 ];

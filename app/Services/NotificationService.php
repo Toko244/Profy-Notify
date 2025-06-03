@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Mail\DefaultMail;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class NotificationService
@@ -58,6 +59,24 @@ class NotificationService
             } else {
                 echo "Failed to send SMS: {$result['message']}";
             }
+        }
+    }
+
+    public function push(): void
+    {
+        $onesignalService = new OneSignalService();
+        foreach ($this->customers as $customer) {
+            $content = $this->notification->content;
+
+            $content = str_replace('{first_name}', $customer['first_name'], $content);
+            $content = str_replace('{last_name}', $customer['last_name'], $content);
+
+            $result = $onesignalService->send(
+                [$customer['onesignal_player_id']],
+                $this->notification->subject,
+                $content,
+                ['notification_id' => $this->notification->id, 'item_type' => 'product']
+            );
         }
     }
 }
