@@ -3,38 +3,35 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SmscoService
 {
-    private $username;
-    private $password;
-    private $baseUrl;
+    private string $username;
+    private string $password;
+    private string $baseUrl;
+    private string $endpointSendSms;
 
     public function __construct()
     {
         $this->username = config('sms.smsco.username');
         $this->password = config('sms.smsco.password');
-        $this->baseUrl = config('sms.smsco.url');
+        $this->baseUrl = rtrim(config('sms.smsco.url'), '/');
+        $this->endpointSendSms = config('sms.smsco.endpoint_send_sms', '/sendsms.php');
     }
 
     /**
-     * Send SMS message
-     *
-     * @param string $to Recipient phone number(s), comma separated
-     * @param string $message Text message (latin characters only)
-     * @param string|null $schedule Optional schedule date "YYYY-MM-DD HH:mm:ss"
-     * @param bool $checkBalance Whether to check credit balance instead of sending SMS
-     * @return array ['success' => bool, 'message' => string, 'sms_id' => ?string, 'used_credits' => ?int]
+     * Send SMS message or check balance.
      */
     public function send(string $to, string $message, ?string $schedule = null, bool $checkBalance = false): array
     {
-        $to = preg_replace('/[^\d,]/', '', $to);
+        $to = $this->sanitizeRecipients($to);
 
         $params = [
-            'username' => $this->username,
-            'password' => $this->password,
+            'username'  => $this->username,
+            'password'  => $this->password,
             'recipient' => $to,
-            'message' => $message,
+            'message'   => $message,
         ];
 
         if ($checkBalance) {
@@ -45,114 +42,69 @@ class SmscoService
             $params['schedule'] = $schedule;
         }
 
-        $url = $this->baseUrl . '/sendsms.php';
+        return $this->handleSendRequest($params);
+    }
 
+    /**
+     * Format recipients: keep only digits and commas.
+     */
+    private function sanitizeRecipients(string $to): string
+    {
+        return preg_replace('/[^\d,]/', '', $to);
+    }
+
+    /**
+     * Handle send request.
+     */
+    private function handleSendRequest(array $params): array
+    {
+        $url = $this->baseUrl . $this->endpointSendSms;
         $response = Http::asForm()->post($url, $params);
 
         if (!$response->ok()) {
-            return [
-                'success' => false,
-                'message' => 'HTTP request failed with status ' . $response->status(),
-                'sms_id' => null,
-                'used_credits' => null,
-            ];
+            Log::error("SMS Send Failed", ['status' => $response->status(), 'body' => $response->body()]);
+            return $this->errorResponse('HTTP request failed with status ' . $response->status());
         }
 
         $body = trim($response->body());
+        $errorCodes = config('sms.error_codes');
 
-        $errors = [
-            '2904' => 'SMS Sending Failed',
-            '2905' => 'Invalid username/password combination',
-            '2906' => 'Credit exhausted',
-            '2907' => 'Gateway unavailable',
-            '2908' => 'Invalid schedule date format',
-            '2909' => 'Unable to schedule',
-            '2910' => 'Username is empty',
-            '2911' => 'Password is empty',
-            '2912' => 'Recipient is empty',
-            '2913' => 'Message is empty',
-            '2914' => 'Sender is empty',
-            '2915' => 'One or more required fields are empty',
-        ];
-
-        if (array_key_exists($body, $errors)) {
-            return [
-                'success' => false,
-                'message' => $errors[$body],
-                'sms_id' => null,
-                'used_credits' => null,
-            ];
+        if (isset($errorCodes[$body])) {
+            return $this->errorResponse($errorCodes[$body]);
         }
 
         if (str_starts_with($body, 'OK')) {
-            $parts = explode(' ', $body);
-            return [
-                'success' => true,
-                'message' => 'SMS sent successfully',
-                'used_credits' => isset($parts[1]) ? (int)$parts[1] : null,
-                'sms_id' => $parts[2] ?? null,
-            ];
+            return $this->parseSuccessResponse($body);
         }
 
+        return $this->errorResponse('Unexpected response: ' . $body);
+    }
+
+    /**
+     * Parse success response body.
+     */
+    private function parseSuccessResponse(string $body): array
+    {
+        $parts = explode(' ', $body);
+
         return [
-            'success' => false,
-            'message' => 'Unexpected response: ' . $body,
-            'sms_id' => null,
-            'used_credits' => null,
+            'success' => true,
+            'message' => 'SMS sent successfully',
+            'used_credits' => isset($parts[1]) ? (int)$parts[1] : null,
+            'sms_id' => $parts[2] ?? null,
         ];
     }
 
     /**
-     * Check SMS status by SMS ID
-     *
-     * @param string $smsId
-     * @return array ['success' => bool, 'status_code' => ?int, 'status_message' => ?string]
+     * Return a standardized error response.
      */
-    public function checkStatus(string $smsId): array
+    private function errorResponse(string $message): array
     {
-        $params = [
-            'username' => $this->username,
-            'password' => $this->password,
-            'mes_id' => $smsId,
-        ];
-
-        $url = $this->baseUrl . '/getstatus.php';
-
-        $response = Http::asForm()->post($url, $params);
-
-        if (!$response->ok()) {
-            return [
-                'success' => false,
-                'status_code' => null,
-                'status_message' => 'HTTP request failed with status ' . $response->status(),
-            ];
-        }
-
-        $body = trim($response->body());
-
-        $statuses = [
-            '0' => 'Sent',
-            '1' => 'Delivered',
-            '2' => 'In process',
-            '3' => 'Failed',
-            '4' => 'Deleted',
-            '5' => 'Expired',
-            '6' => 'Rejected',
-            '7' => 'Canceled',
-        ];
-
-        if (isset($statuses[$body])) {
-            return [
-                'success' => true,
-                'status_code' => (int)$body,
-                'status_message' => $statuses[$body],
-            ];
-        }
-
         return [
             'success' => false,
-            'status_code' => null,
-            'status_message' => 'Unexpected response: ' . $body,
+            'message' => $message,
+            'sms_id' => null,
+            'used_credits' => null,
         ];
     }
 }
