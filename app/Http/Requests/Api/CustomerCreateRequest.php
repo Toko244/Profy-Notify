@@ -28,6 +28,7 @@ class CustomerCreateRequest extends FormRequest
             'last_name' => 'nullable|string',
             'phone' => 'nullable|string',
             'allow_notification' => 'nullable|boolean',
+            'onesignal_player_id' => 'nullable|string',
         ];
     }
 }

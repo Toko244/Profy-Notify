@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
-use App\Http\Controllers\Api\MiscController;
 use App\Http\Controllers\Api\OrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,11 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::group(['middleware' => 'auth:sanctum'], function () {
+// Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('/customers', [CustomerController::class, 'store']);
 
-    Route::post('orders', [OrderController::class, 'store']);
-});
-
-Route::post('/user-registered', [MiscController::class, 'userRegistered']);
-Route::post('/order-created', [MiscController::class, 'orderCreated']);
+    Route::post('/orders', [OrderController::class, 'store']);
+// });
