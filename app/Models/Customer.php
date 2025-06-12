@@ -13,6 +13,7 @@ class Customer extends Model
         'email',
         'phone',
         'allow_notification',
+        'onesignal_player_id',
     ];
 
     protected $casts = [

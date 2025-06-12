@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->string('onesignal_player_id')->nullable()->after('allow_notification');
+            $table->string('onesignal_player_id')->nullable();
         });
     }
 
