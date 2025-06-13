@@ -22,9 +22,9 @@ class CustomerCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'profy_id' => 'required|integer|unique:customers,profy_id',
+            'profy_id' => 'required|integer',
             'email' => 'required|email',
-            'first_name' => 'required|string',
+            'first_name' => 'nullable|string',
             'last_name' => 'nullable|string',
             'phone' => 'nullable|string',
             'allow_notification' => 'nullable|boolean',
