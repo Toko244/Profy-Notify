@@ -19,8 +19,7 @@ class CustomerController extends Controller
     public function store(CustomerCreateRequest $request): JsonResponse
     {
         Log::info(json_encode($request->validated()));
-        $customer = Customer::updateOrCreate($request->validated());
-
+        $customer = Customer::updateOrCreate(['profy_id' => $request->input('profy_id')], $request->validated());
         $registerService = new RegisterService();
         $registerService->createJob($customer);
 
