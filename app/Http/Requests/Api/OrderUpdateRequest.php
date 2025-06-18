@@ -11,7 +11,7 @@ class OrderUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,9 +22,9 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id' => 'required|numeric',
-            'finished_at' => 'required|numeric',
-            'price' => 'required',
+            'order_number' => 'required|numeric',
+            'service_finished_at' => 'required|numeric',
+            'price' => 'nullable|float',
             'type' => 'required'
         ];
     }

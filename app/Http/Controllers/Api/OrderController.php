@@ -48,7 +48,7 @@ class OrderController extends Controller
     public function update(OrderUpdateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $order = Order::where('order_number', $data['order_id'])->firstOrFail();
+        $order = Order::where('order_number', $data['order_number'])->firstOrFail();
         $order->update([
             'finished_at' => date("Y-m-d H:i:s", $data['finished_at']),
             'price' => $data['price'],
