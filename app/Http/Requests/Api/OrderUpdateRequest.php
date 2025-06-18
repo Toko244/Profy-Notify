@@ -24,7 +24,7 @@ class OrderUpdateRequest extends FormRequest
         return [
             'order_number' => 'required|numeric',
             'service_finished_at' => 'required|numeric',
-            'price' => 'nullable|float',
+            'price' => 'nullable',
             'type' => 'required'
         ];
     }
