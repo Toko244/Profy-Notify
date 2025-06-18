@@ -22,4 +22,5 @@ Route::post('/login', [AuthController::class, 'login']);
     Route::post('/customers', [CustomerController::class, 'store']);
 
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::put('/orders/{order_number}', [OrderController::class, 'update']);
 // });

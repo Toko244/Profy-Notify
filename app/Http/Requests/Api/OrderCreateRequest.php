@@ -22,8 +22,12 @@ class OrderCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id' => 'required|numeric',
-            'user_id' => 'required|exists:customers,profy_id',
+            'order_number' => 'required|numeric',
+            'customer_id' => 'required|exists:customers,profy_id',
+            'service_fiinished_at' => 'required|date_format:Y-m-d H:i:s',
+            'price' => 'required|numeric',
+            'type' => 'required|string|in:Cleaner,Handyman',
+            'created_at' => 'required|date_format:Y-m-d H:i:s',
         ];
     }
 }
