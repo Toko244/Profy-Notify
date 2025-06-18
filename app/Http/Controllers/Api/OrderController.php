@@ -26,7 +26,7 @@ class OrderController extends Controller
         $data = $request->validated();
         $customer = Customer::where('profy_id', $data['user_id'])->firstOrFail();
         $order = Order::create([
-            'order_number' => $data['order_id'],
+            'order_number' => $data['order_number'],
             'customer_id' => $customer->id
         ]);
 
