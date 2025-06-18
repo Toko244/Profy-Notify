@@ -24,7 +24,7 @@ class OrderController extends Controller
     public function store(OrderCreateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $customer = Customer::where('profy_id', $data['user_id'])->firstOrFail();
+        $customer = Customer::where('profy_id', $data['customer_id'])->firstOrFail();
         $order = Order::create([
             'order_number' => $data['order_number'],
             'customer_id' => $customer->id
