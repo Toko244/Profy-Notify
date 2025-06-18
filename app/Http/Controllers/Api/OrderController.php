@@ -50,9 +50,8 @@ class OrderController extends Controller
         $data = $request->validated();
         $order = Order::where('order_number', $data['order_number'])->firstOrFail();
         $order->update([
-            'finished_at' => date("Y-m-d H:i:s", $data['finished_at']),
+            'service_finished_at' => date("Y-m-d H:i:s", $data['service_finished_at']),
             'price' => $data['price'],
-            'type' => $data['type']
         ]);
 
         $this->orderService->orderCreateFinishedJob($order);

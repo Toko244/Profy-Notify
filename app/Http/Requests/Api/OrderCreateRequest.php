@@ -24,7 +24,7 @@ class OrderCreateRequest extends FormRequest
         return [
             'order_number' => 'required|numeric',
             'customer_id' => 'required|exists:customers,profy_id',
-            'service_fiinished_at' => 'nullable',
+            'service_finished_at' => 'nullable',
             'price' => 'nullable|numeric',
             'type' => 'required|string|in:Cleaner,Handyman',
             'created_at' => 'required',
