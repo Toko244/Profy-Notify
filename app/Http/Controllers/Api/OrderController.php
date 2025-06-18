@@ -25,9 +25,18 @@ class OrderController extends Controller
     {
         $data = $request->validated();
         $customer = Customer::where('profy_id', $data['customer_id'])->firstOrFail();
-        $order = Order::create($data);
+
+        $order = Order::create([
+            'order_number' => $data['order_number'],
+            'customer_id' => $customer->id,
+            'service_finished_at' => $data['service_finished_at'] ?? null,
+            'price' => $data['price'] ?? null,
+            'type' => $data['type'],
+            'created_at' => $data['created_at'],
+        ]);
 
         $this->orderService->orderCreatedJob($order);
+
         return response()->json([
             'message' => 'Order created successfully',
         ], 201);
