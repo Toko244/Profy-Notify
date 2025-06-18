@@ -24,10 +24,10 @@ class OrderCreateRequest extends FormRequest
         return [
             'order_number' => 'required|numeric',
             'customer_id' => 'required|exists:customers,profy_id',
-            'service_fiinished_at' => 'required|date_format:Y-m-d H:i:s',
-            'price' => 'required|numeric',
+            'service_fiinished_at' => 'nullable',
+            'price' => 'nullable|numeric',
             'type' => 'required|string|in:Cleaner,Handyman',
-            'created_at' => 'required|date_format:Y-m-d H:i:s',
+            'created_at' => 'required',
         ];
     }
 }
