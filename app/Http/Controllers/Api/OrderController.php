@@ -49,10 +49,7 @@ class OrderController extends Controller
     {
         $data = $request->validated();
         $order = Order::where('order_number', $data['order_number'])->firstOrFail();
-        $order->update([
-            'service_finished_at' => date("Y-m-d H:i:s", $data['service_finished_at']),
-            'price' => $data['price'],
-        ]);
+        $order->update($data);
 
         $this->orderService->orderCreateFinishedJob($order);
         return response()->json([
