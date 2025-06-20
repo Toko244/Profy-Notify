@@ -32,10 +32,10 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('Prof!5@5')
             ],
             [
-                'name' => 'Elina Oganesiani',
-                'email' => 'elinaoganesiani@gmail.com',
+                'name' => 'Admin',
+                'email' => 'admin@admin.com',
                 'email_verified_at' => now(),
-                'password' => bcrypt('Prof!5@5')
+                'password' => bcrypt('admin')
             ],
 
         ];

@@ -35,20 +35,11 @@ class RegisterJob implements ShouldQueue
     {
         $customers = $this->queryService->customerQuery($this->customer, $this->notification);
         $notificationService = new NotificationService($this->notification, $customers);
-        switch ($this->notification->notification_type) {
-            case 'email':
-                $notificationService->email();
-                break;
-            case 'sms':
-                $notificationService->sms();
-                break;
 
-            default:
-                # code...
-                break;
-
-
-            $notificationService->send($this->notification, $customers);
+        foreach ($this->notification->notification_type as $type) {
+            if (method_exists($notificationService, $type)) {
+                $notificationService->{$type}();
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ class Notification extends Model
     ];
 
     protected $casts = [
+        'notification_type' => 'array',
         'active' => 'boolean',
         'additional' => 'array'
     ];

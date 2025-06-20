@@ -24,7 +24,8 @@ class NotificationRequest extends FormRequest
         return [
             'title' => 'required|string',
             'trigger' => 'required|string',
-            'notification_type' => 'required|string',
+            'notification_type' => 'required|array',
+            'notification_type.*' => 'required|string',
             'subject' => 'nullable|string',
             'email_template' => 'nullable|string',
             'content' => 'required|string',

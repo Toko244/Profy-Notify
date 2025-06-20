@@ -48,7 +48,7 @@ class NotificationController extends Controller
         $notification = Notification::create([
             'title' => $request->title,
             'trigger' => $request->trigger,
-            'notification_type' => $request->notification_type,
+            'notification_type' => (array) $request->notification_type,
             'email_template' => $request->email_template,
             'subject' => $request->subject,
             'content' => $request->content,

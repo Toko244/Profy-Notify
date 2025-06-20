@@ -15,7 +15,7 @@ use function Termwind\render;
 class Form extends Component
 {
     public $notification = null;
-    public $type = 'email';
+    public $type = [];
     public $trigger = 'now';
     protected $listeners = ['changeType' => 'changeType', 'changeTrigger' => 'changeTrigger', 'changeCriteria' => 'changeCriteria'];
     public $criteria = [];
@@ -23,7 +23,7 @@ class Form extends Component
 
     public function changeType($value)
     {
-        $this->type = $value;
+        $this->type = is_array($value) ? $value : (json_decode($value, true) ?? []);
     }
 
     public function changeCriteria($value)
@@ -55,7 +55,10 @@ class Form extends Component
     public function mount()
     {
         if ($this->notification) {
-            $this->type = $this->notification->notification_type;
+            $this->type = is_array($this->notification->notification_type)
+                ? $this->notification->notification_type
+                : [$this->notification->notification_type];
+
             $this->trigger = $this->notification->trigger;
             $this->criteria = $this->notification->criteria->toArray();
         }
