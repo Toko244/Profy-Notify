@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class RegisterJob implements ShouldQueue
 {
@@ -38,6 +39,7 @@ class RegisterJob implements ShouldQueue
 
         foreach ($this->notification->notification_type as $type) {
             if (method_exists($notificationService, $type)) {
+                Log::info("Calling notification method: {$type}");
                 $notificationService->{$type}();
             }
         }
