@@ -11,7 +11,7 @@ class RegisterService
 {
     public function createJob(Customer $customer): void
     {
-        $notifications = Notification::where('trigger', Trigger::REGISTER)->get();
+        $notifications = Notification::where('trigger', Trigger::REGISTER)->where('active', true)->get();
         $notifications->load('criteria');
         foreach ($notifications as $notification) {
             $delay = ($notification->delay_m * 60) + ($notification->delay_h * 3600) + ($notification->delay_d * 86400);
