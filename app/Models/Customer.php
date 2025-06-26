@@ -14,6 +14,7 @@ class Customer extends Model
         'phone',
         'allow_notification',
         'onesignal_player_id',
+        'language'
     ];
 
     protected $casts = [
