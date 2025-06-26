@@ -67,7 +67,7 @@ class NotificationService
                 'content' => $content,
                 'mailTemplate' => $mailTemplate,
             ];
-
+            Log::info($mailData);
             Mail::to($email)->send(new DefaultMail($mailData));
         }
     }
