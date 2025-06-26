@@ -83,7 +83,7 @@ class NotificationService
                 [$customer['first_name'], $customer['last_name']],
                 $translation['content']
             );
-
+            Log::info($content);
             $result = $smscoService->send($customer['phone'], $content);
 
             if ($result['success']) {
