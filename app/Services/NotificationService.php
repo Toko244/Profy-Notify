@@ -37,7 +37,10 @@ class NotificationService
     protected function getTranslationForCustomer(array $customer): array
     {
         $locale = strtolower($customer['language'] ?? 'en');
-        Log::info($customer['language'], $locale);
+        Log::info('Customer info', [
+            'language' => $customer['language'],
+            'locale' => $locale,
+        ]);
         $languageId = self::LANGUAGE_LOCALE_TO_ID[$locale] ?? self::DEFAULT_LANGUAGE_ID;
 
         $translation = $this->notification->translations
