@@ -20,7 +20,7 @@
 @section('content')
 <div class="row">
     <div class="col-12">
-        <div class="card card-primary">
+        <div class="card card-primary p-4 mb-4 shadow-sm rounded">
             <div class="card-header">
                 <h2 class="card-title">Email Notification</h2>
             </div>

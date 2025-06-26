@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Models\NotificationCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
@@ -45,17 +46,8 @@ class NotificationController extends Controller
      */
     public function store(NotificationRequest $request)
     {
-        $notification = Notification::create([
-            'title' => $request->title,
-            'trigger' => $request->trigger,
-            'notification_type' => (array) $request->notification_type,
-            'email_template' => $request->email_template,
-            'subject' => $request->subject,
-            'content' => $request->content,
-            'active' => $request->active,
-            'category_id' => $request->category_id,
-            'additional' => $request->additional
-        ]);
+        $notification = Notification::create($request->validated());
+        $notification->translations()->createMany($request->translations);
 
         if ($request->criterion) {
             foreach ($request->criterion as $criterion) {
@@ -89,23 +81,12 @@ class NotificationController extends Controller
      */
     public function update(NotificationRequest $request, Notification $notification)
     {
-        $notification->update([
-            'title' => $request->title,
-            'trigger' => $request->trigger,
-            'notification_type' => $request->notification_type,
-            'email_template' => $request->email_template,
-            'subject' => $request->subject,
-            'content' => $request->content,
-            'delay_m' => $request->delay_m ?? 0,
-            'delay_h' => $request->delay_h ?? 0,
-            'delay_d' => $request->delay_d ?? 0,
-            'active' => $request->active,
-            'category_id' => $request->category_id,
-            'additional' => $request->additional
-        ]);
+        $notification->update($request->validated());
+
+        $notification->translations()->delete();
+        $notification->translations()->createMany($request->translations);
 
         $notification->criteria()->delete();
-
         if ($request->criterion) {
             foreach ($request->criterion as $criterion) {
                 $notification->criteria()->create([
@@ -115,9 +96,10 @@ class NotificationController extends Controller
             }
         }
 
-        if ($notification->trigger == 'scheduled') {
+        if ($notification->trigger === 'scheduled' && isset($notification->additional['time'])) {
             ScheduledJob::dispatch($notification)->delay(Carbon::create($notification->additional['time']));
         }
+
         return redirect()->route('notifications.index');
     }
 

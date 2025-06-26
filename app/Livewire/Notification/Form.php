@@ -7,7 +7,9 @@ use App\Enums\EmailTemplate;
 use App\Enums\NotificationType;
 use App\Enums\OrderType;
 use App\Enums\Trigger;
+use App\Models\Language;
 use App\Models\NotificationCategory;
+use Illuminate\Support\Facades\Lang;
 use Livewire\Component;
 
 use function Termwind\render;
@@ -20,6 +22,7 @@ class Form extends Component
     protected $listeners = ['changeType' => 'changeType', 'changeTrigger' => 'changeTrigger', 'changeCriteria' => 'changeCriteria'];
     public $criteria = [];
     public $criteriaTypes = [];
+    public $translations = [];
 
     public function changeType($value)
     {
@@ -61,6 +64,11 @@ class Form extends Component
 
             $this->trigger = $this->notification->trigger;
             $this->criteria = $this->notification->criteria->toArray();
+
+            foreach ($this->notification->translations as $translation) {
+                $this->translations[$translation->language_id]['subject'] = $translation->subject;
+                $this->translations[$translation->language_id]['content'] = $translation->content;
+            }
         }
     }
 
@@ -73,6 +81,7 @@ class Form extends Component
         $this->criteriaTypes = CriteriaType::cases();
         $orderTypes = OrderType::cases();
         $notificationCategories = NotificationCategory::latest()->pluck('title', 'id')->toArray();
+        $languages = Language::all();
         $weekDays = [
             'monday' => 'Monday',
             'tuesday' => 'Tuesday',
@@ -94,7 +103,8 @@ class Form extends Component
             'notification' => $this->notification,
             'notificationCategories' => $notificationCategories,
             'weekDays' => $weekDays,
-            'daysOfMonth' => $daysOfMonth
+            'daysOfMonth' => $daysOfMonth,
+            'languages' => $languages
         ]);
     }
 }

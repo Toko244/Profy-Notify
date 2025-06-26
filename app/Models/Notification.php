@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Notification extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Translatable;
 
     protected $fillable = [
         'category_id',
@@ -27,6 +28,11 @@ class Notification extends Model
         'active' => 'boolean',
         'additional' => 'array'
     ];
+
+    public function getTranslationModel()
+    {
+        return NotificationTranslation::class;
+    }
 
     public function criteria()
     {

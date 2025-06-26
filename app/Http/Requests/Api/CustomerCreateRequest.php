@@ -27,6 +27,7 @@ class CustomerCreateRequest extends FormRequest
             'first_name' => 'nullable|string',
             'last_name' => 'nullable|string',
             'phone' => 'nullable|string',
+            'language' => 'required|string',
             'allow_notification' => 'nullable|boolean',
             'onesignal_player_id' => 'nullable|string',
         ];

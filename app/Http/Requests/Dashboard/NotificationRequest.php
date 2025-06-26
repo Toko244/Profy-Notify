@@ -26,15 +26,17 @@ class NotificationRequest extends FormRequest
             'trigger' => 'required|string',
             'notification_type' => 'required|array',
             'notification_type.*' => 'required|string',
-            'subject' => 'nullable|string',
             'email_template' => 'nullable|string',
-            'content' => 'required|string',
             'active' => 'nullable|boolean',
             'criterion' => 'nullable|array',
             'criterion.*.type' => 'required|string',
             'criterion.*.additional' => 'nullable',
             'category_id' => 'nullable|exists:notification_categories,id',
-            'additional' => 'nullable|array'
+            'additional' => 'nullable|array',
+            'translations' => 'required|array',
+            'translations.*.language_id' => 'required|exists:languages,id',
+            'translations.*.subject' => 'required|string',
+            'translations.*.content' => 'required|string',
         ];
     }
 }
