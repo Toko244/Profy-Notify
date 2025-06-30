@@ -27,6 +27,8 @@ class CustomerUpdateRequest extends FormRequest
             'first_name' => 'required|string',
             'last_name' => 'nullable|string',
             'phone' => 'nullable|string',
+            'language' => 'required|string',
+            'onesignal_player_id' => 'nullable|string',
             'allow_notification' => 'nullable|boolean',
         ];
     }
