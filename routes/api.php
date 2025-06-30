@@ -18,9 +18,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
 
-// Route::group(['middleware' => 'auth:sanctum'], function () {
-    Route::post('/customers', [CustomerController::class, 'store']);
+Route::prefix('customers')->group(function () {
+    Route::post('/', [CustomerController::class, 'store']);
+    Route::put('/{profy_id}', [CustomerController::class, 'update']);
+});
 
-    Route::post('/orders', [OrderController::class, 'store']);
-    Route::put('/orders/{order_number}', [OrderController::class, 'update']);
-// });
+Route::prefix('orders')->group(function () {
+    Route::post('/', [OrderController::class, 'store']);
+    Route::put('/{order_number}', [OrderController::class, 'update']);
+});

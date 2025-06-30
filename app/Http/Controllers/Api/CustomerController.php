@@ -19,7 +19,7 @@ class CustomerController extends Controller
     public function store(CustomerCreateRequest $request): JsonResponse
     {
         Log::info(json_encode($request->validated()));
-        $customer = Customer::updateOrCreate(['profy_id' => $request->input('profy_id')], $request->validated());
+        $customer = Customer::create($request->validated());
         $registerService = new RegisterService();
         $registerService->createJob($customer);
 
@@ -31,8 +31,9 @@ class CustomerController extends Controller
      */
     public function update(CustomerUpdateRequest $request): string
     {
-        $customer = Customer::where('profy_id', $request->profy_id)->first();
-        $customer->updateOrCreate($request->validated());
+        $data = $request->validated();
+        $customer = Customer::where('profy_id', $data['profy_id'])->first();
+        $customer->update($data);
 
         return response()->json(['message' => 'Customer updated'], 200);
     }
