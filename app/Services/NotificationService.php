@@ -57,19 +57,21 @@ class NotificationService
     {
         foreach ($this->customers as $customer) {
             $email = $customer['email'];
-            $subject = $this->notification->subject;
-            $content = $this->notification->content;
-            $mailTemplate = 'mail.'.$this->notification->email_template;
+            $mailTemplate = 'mail.' . $this->notification->email_template;
 
-            $content = str_replace('{first_name}', $customer['first_name'], $content);
-            $content = str_replace('{last_name}', $customer['last_name'], $content);
+            $translation = $this->getTranslationForCustomer($customer);
+            $content = str_replace(
+                ['{first_name}', '{last_name}'],
+                [$customer['first_name'], $customer['last_name']],
+                $translation['content']
+            );
 
             $mailData = [
-                'subject' => $subject,
+                'subject' => $translation['subject'],
                 'content' => $content,
                 'mailTemplate' => $mailTemplate,
             ];
-
+            Log::info($mailData);
             Mail::to($email)->send(new DefaultMail($mailData));
         }
     }
