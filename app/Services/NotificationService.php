@@ -56,23 +56,42 @@ class NotificationService
     public function email(): void
     {
         foreach ($this->customers as $customer) {
-            $email = $customer['email'];
-            $mailTemplate = 'mail.' . $this->notification->email_template;
+            try {
+                $email = $customer['email'];
+                if (empty($email)) {
+                    Log::warning("Skipping customer with no email", ['customer' => $customer]);
+                    continue;
+                }
 
-            $translation = $this->getTranslationForCustomer($customer);
-            $content = str_replace(
-                ['{first_name}', '{last_name}'],
-                [$customer['first_name'], $customer['last_name']],
-                $translation['content']
-            );
+                $template = $this->notification->email_template;
+                if (empty($template) || !view()->exists("mail.$template")) {
+                    Log::error("Email template not found: mail.$template");
+                    continue;
+                }
 
-            $mailData = [
-                'subject' => $translation['subject'],
-                'content' => $content,
-                'mailTemplate' => $mailTemplate,
-            ];
-            Log::info($mailData);
-            Mail::to($email)->send(new DefaultMail($mailData));
+                $translation = $this->getTranslationForCustomer($customer);
+                $content = str_replace(
+                    ['{first_name}', '{last_name}'],
+                    [$customer['first_name'] ?? '', $customer['last_name'] ?? ''],
+                    $translation['content'] ?? ''
+                );
+
+                $mailData = [
+                    'subject' => $translation['subject'] ?? '',
+                    'content' => $content,
+                    'mailTemplate' => "mail.$template",
+                ];
+
+                Log::info($mailData);
+                Mail::to($email)->send(new DefaultMail($mailData));
+
+            } catch (\Throwable $e) {
+                Log::error("Email sending failed for customer", [
+                    'customer' => $customer,
+                    'message' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+            }
         }
     }
 
