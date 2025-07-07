@@ -56,42 +56,21 @@ class NotificationService
     public function email(): void
     {
         foreach ($this->customers as $customer) {
-            try {
-                $email = $customer['email'];
-                if (empty($email)) {
-                    Log::warning("Skipping customer with no email", ['customer' => $customer]);
-                    continue;
-                }
+            $email = $customer['email'];
+            $subject = $this->notification->subject;
+            $content = $this->notification->content;
+            $mailTemplate = 'mail.'.$this->notification->email_template;
 
-                $template = $this->notification->email_template;
-                if (empty($template) || !view()->exists("mail.$template")) {
-                    Log::error("Email template not found: mail.$template");
-                    continue;
-                }
+            $content = str_replace('{first_name}', $customer['first_name'], $content);
+            $content = str_replace('{last_name}', $customer['last_name'], $content);
 
-                $translation = $this->getTranslationForCustomer($customer);
-                $content = str_replace(
-                    ['{first_name}', '{last_name}'],
-                    [$customer['first_name'] ?? '', $customer['last_name'] ?? ''],
-                    $translation['content'] ?? ''
-                );
+            $mailData = [
+                'subject' => $subject,
+                'content' => $content,
+                'mailTemplate' => $mailTemplate,
+            ];
 
-                $mailData = [
-                    'subject' => $translation['subject'] ?? '',
-                    'content' => $content,
-                    'mailTemplate' => "mail.$template",
-                ];
-
-                Log::info($mailData);
-                Mail::to($email)->send(new DefaultMail($mailData));
-
-            } catch (\Throwable $e) {
-                Log::error("Email sending failed for customer", [
-                    'customer' => $customer,
-                    'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-            }
+            Mail::to($email)->send(new DefaultMail($mailData));
         }
     }
 
