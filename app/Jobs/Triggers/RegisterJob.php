@@ -34,14 +34,21 @@ class RegisterJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $customers = $this->queryService->customerQuery($this->customer, $this->notification);
-        $notificationService = new NotificationService($this->notification, $customers);
+        try {
+            $customers = $this->queryService->customerQuery($this->customer, $this->notification);
+            $notificationService = new NotificationService($this->notification, $customers);
 
-        foreach ($this->notification->notification_type as $type) {
-            if (method_exists($notificationService, $type)) {
-                Log::info("Calling notification method: {$type}");
-                $notificationService->{$type}();
+            foreach ($this->notification->notification_type as $type) {
+                if (method_exists($notificationService, $type)) {
+                    Log::info("Calling notification method: {$type}");
+                    $notificationService->{$type}();
+                }
             }
+        } catch (\Throwable $e) {
+            Log::error('RegisterJob failed: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+            throw $e;
         }
     }
 }
