@@ -1,4 +1,14 @@
 <div>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <h5 class="mb-2">There were some errors with your submission:</h5>
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <div class="row g-3">
         {{-- Title --}}
         <div class="col-md-4">

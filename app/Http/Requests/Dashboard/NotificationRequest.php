@@ -3,9 +3,21 @@
 namespace App\Http\Requests\Dashboard;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class NotificationRequest extends FormRequest
 {
+    protected bool $requiresSubject = false;
+
+    /**
+     * Prepare data before validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $types = $this->input('notification_type', []);
+        $this->requiresSubject = in_array('email', $types) || in_array('push', $types);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -17,11 +29,11 @@ class NotificationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'title' => 'required|string',
             'trigger' => 'required|string',
             'notification_type' => 'required|array',
@@ -35,8 +47,15 @@ class NotificationRequest extends FormRequest
             'additional' => 'nullable|array',
             'translations' => 'required|array',
             'translations.*.language_id' => 'required|exists:languages,id',
-            'translations.*.subject' => 'required|string',
             'translations.*.content' => 'required|string',
         ];
+
+        if ($this->requiresSubject) {
+            $rules['translations.*.subject'] = 'required|string';
+        } else {
+            $rules['translations.*.subject'] = 'nullable|string';
+        }
+
+        return $rules;
     }
 }
