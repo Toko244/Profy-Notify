@@ -94,6 +94,10 @@ return [
                 'postmark',
             ],
         ],
+
+        'sendgrid' => [
+            'transport' => 'sendgrid',
+        ],
     ],
 
     /*
