@@ -41,4 +41,8 @@ return [
             'api_key' => env('ONESIGNAL_CUSTOMER_API_KEY'),
         ],
     ],
+
+    'sendgrid' => [
+        'api_key' => env('SENDGRID_API_KEY'),
+    ],
 ];
