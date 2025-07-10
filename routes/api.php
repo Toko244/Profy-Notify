@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::prefix('customers')->group(function () {
+    Route::get('/{profy_id}', [CustomerController::class, 'show']);
     Route::post('/', [CustomerController::class, 'store']);
     Route::put('/{profy_id}', [CustomerController::class, 'update']);
 });

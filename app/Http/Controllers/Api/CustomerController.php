@@ -26,6 +26,12 @@ class CustomerController extends Controller
         return response()->json(['message' => 'Customer created'], 201);
     }
 
+    public function show(int $profy_id): JsonResponse
+    {
+        $customer = Customer::where('profy_id', $profy_id)->firstOrFail();
+        return response()->json($customer, 200);
+    }
+
     /**
      * Update the specified resource in storage.
      */
