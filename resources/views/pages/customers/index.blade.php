@@ -53,7 +53,7 @@
                     <tbody>
                         @foreach ($customers as $customer)
                             <tr class="align-middle">
-                                <td style="text-align: center"> <a style="text-decoration: none" href="https://api.profy.ge/admin/users/{{ $customer->profy_id }}/view" target="_blank">{{ $customer->profy_id }}</a></td>
+                                <td style="text-align: center"> <a style="text-decoration: none" href="https://apitest.profy.ge/admin/users/{{ $customer->profy_id }}/view" target="_blank">{{ $customer->profy_id }}</a></td>
                                 <td>{{ $customer->first_name }}</td>
                                 <td>{{ $customer->last_name }}</td>
                                 <td>{{ $customer->email }}</td>
