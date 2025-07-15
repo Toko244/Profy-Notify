@@ -53,10 +53,10 @@
                         <div class="filter-btns">
 
                             <button type="button" onclick="clearFilters()" class="btn btn-secondary table-header-btn filter-btn">
-                                გასუფთავება
+                                Clear
                             </button>
                             <button type="submit" class="btn btn-info table-header-btn filter-btn">
-                                გაფილტვრა
+                                Filter
                             </button>
                         </div>
                     </form>

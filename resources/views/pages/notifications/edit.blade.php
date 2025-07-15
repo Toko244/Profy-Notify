@@ -8,7 +8,7 @@
     <div class="col-sm-6">
         <ol class="breadcrumb float-sm-end">
             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('notifications.index') }}">Email Notifications</a></li>
+            <li class="breadcrumb-item"><a href="{{ route('notifications.index') }}">Notifications</a></li>
             <li class="breadcrumb-item active" aria-current="page">
                 Edit
             </li>
@@ -22,7 +22,7 @@
     <div class="col-12">
         <div class="card card-primary p-4 mb-4 shadow-sm rounded">
             <div class="card-header">
-                <h3 class="card-title">Email Notification</h3>
+                <h3 class="card-title">Notification</h3>
             </div>
             <form action="{{ route('notifications.update', ['notification' => $notification]) }}" method="POST">
                 <div class="card-body row">
