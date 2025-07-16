@@ -40,13 +40,13 @@
                     </a>
                 </li>
 
-                <li class="nav-header">Symlinks</li>
+                {{-- <li class="nav-header">Symlinks</li>
 
                 <li class="nav-item">
                     <a href="{{ route('symlinks.index') }}" class="nav-link"> <i class="bi bi-link-45deg"></i>
                         <p>Symlinks</p>
                     </a>
-                </li>
+                </li> --}}
             </ul>
         </nav>
     </div>

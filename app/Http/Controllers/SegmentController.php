@@ -33,9 +33,14 @@ class SegmentController extends Controller
     {
         $importData = Excel::toArray(new SegmentImport, request()->file('file'));
         $customerEmails = [];
+
         foreach ($importData[0] as $row) {
-            $customerEmails[] = $row[0];
+            $email = trim($row[0]);
+            if ($email !== '') {
+                $customerEmails[] = $email;
+            }
         }
+
         $segment = Segment::create($request->only('name', 'description'));
         Customer::whereIn('email', $customerEmails)->select('id')->get()->each(function ($customer) use ($segment) {
             DB::table('segment_customers')->insert([
@@ -44,11 +49,10 @@ class SegmentController extends Controller
             ]);
         });
 
-
         return redirect()->route('segments.index')->with('success', 'Segment created');
     }
 
-    public function delete(Segment $segment)
+    public function destroy(Segment $segment)
     {
         $segment->delete();
         return redirect()->route('segments.index')->with('success', 'Segment deleted');
