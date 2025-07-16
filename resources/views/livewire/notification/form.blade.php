@@ -235,36 +235,41 @@
                             @endif
 
                             <div class="col-md-4">
-                                @if (in_array($criterion['type'], ['has_order', 'does_not_have_order']))
-                                @livewire('form.number', [
-                                'name' => 'criterion['.$index.'][additional][duration]',
-                                'label' => 'Duration (Days)',
-                                'required' => 'required',
-                                'value' => $criterion['additional']['duration'] ?? 0
-                                ], key($criterion['id'].'-duration'))
-                                @elseif (in_array($criterion['type'], ['order_price_more_than',
-                                'order_price_less_than']))
-                                @livewire('form.number', [
-                                'name' => 'criterion['.$index.'][additional][price]',
-                                'label' => 'Price (Value)',
-                                'required' => 'required',
-                                'value' => $criterion['additional']['price'] ?? 0
-                                ], key($criterion['id'].'-price'))
-                                @elseif (in_array($criterion['type'], ['more_than_order_count',
-                                'less_than_order_count']))
-                                @livewire('form.number', [
-                                'name' => 'criterion['.$index.'][additional][count]',
-                                'label' => 'Order Count',
-                                'required' => 'required',
-                                'value' => $criterion['additional']['count'] ?? 0
-                                ], key($criterion['id'].'-count'))
+                                @if ($criterion['type'] === 'has_order')
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][count]',
+                                        'label' => 'Count (Orders)',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['count'] ?? 0
+                                    ], key($criterion['id'].'-count'))
+                                @elseif ($criterion['type'] === 'does_not_have_order')
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][duration]',
+                                        'label' => 'Duration (Days)',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['duration'] ?? 0
+                                    ], key($criterion['id'].'-duration'))
+                                @elseif (in_array($criterion['type'], ['order_price_more_than', 'order_price_less_than']))
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][price]',
+                                        'label' => 'Price (Value)',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['price'] ?? 0
+                                    ], key($criterion['id'].'-price'))
+                                @elseif (in_array($criterion['type'], ['more_than_order_count', 'less_than_order_count']))
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][count]',
+                                        'label' => 'Order Count',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['count'] ?? 0
+                                    ], key($criterion['id'].'-count'))
                                 @else
-                                @livewire('form.number', [
-                                'name' => 'criterion['.$index.'][additional][duration]',
-                                'label' => 'Duration (Minutes)',
-                                'required' => 'required',
-                                'value' => $criterion['additional']['duration'] ?? 0
-                                ], key($criterion['id'].'-duration'))
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][duration]',
+                                        'label' => 'Duration (Minutes)',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['duration'] ?? 0
+                                    ], key($criterion['id'].'-duration'))
                                 @endif
                             </div>
 

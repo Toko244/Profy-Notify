@@ -45,7 +45,7 @@ class CriteriaQueryService
                 ->when($except, function ($q) use ($except) {
                     $q->where('id', '!=', $except);
                 });
-        });
+        }, '=', $params['additional']['count'] ?? 1);
     }
 
     public function doesNotHaveOrder(Builder $query, $params, $except = null)
