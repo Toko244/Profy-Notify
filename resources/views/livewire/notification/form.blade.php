@@ -242,6 +242,12 @@
                                         'required' => 'required',
                                         'value' => $criterion['additional']['count'] ?? 0
                                     ], key($criterion['id'].'-count'))
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][duration]',
+                                        'label' => 'Duration (Days)',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['duration'] ?? 0
+                                    ], key($criterion['id'].'-duration'))
                                 @elseif ($criterion['type'] === 'does_not_have_order')
                                     @livewire('form.number', [
                                         'name' => 'criterion['.$index.'][additional][duration]',
