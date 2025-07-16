@@ -30,7 +30,7 @@
                         <span class="d-none d-sm-block">Translations</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" style="    border-bottom: 1px solid var(--bs-border-color-translucent);">
                     <a class="nav-link d-flex flex-column align-items-center" :class="{ 'active': step === 5 }"
                         @click="step = 5" style="cursor: pointer;">
                         <span class="badge rounded-pill bg-primary mb-2">5</span>
@@ -71,6 +71,10 @@
                     @livewire('form.select', ['name' => 'category_id', 'nullable' => true, 'label' => 'Notification
                     Category', 'options' => $notificationCategories, 'selected' => $notification?->category_id ?? '',
                     'option_value' => 'key'], key('notification-category'))
+                </div>
+                <div class="col-md-4">
+                    @livewire('form.checkbox', ['name' => 'active', 'label' => 'Active', 'required' =>
+                    '', 'value' => $notification?->active ?? false])
                 </div>
             </div>
         </div>
