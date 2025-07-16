@@ -6,6 +6,7 @@ use App\Enums\Trigger;
 use App\Jobs\Triggers\RegisterJob;
 use App\Models\Customer;
 use App\Models\Notification;
+use Illuminate\Support\Facades\Log;
 
 class RegisterService
 {
@@ -14,8 +15,13 @@ class RegisterService
         $notifications = Notification::where('trigger', Trigger::REGISTER)->where('active', true)->get();
         $notifications->load('criteria');
         foreach ($notifications as $notification) {
-            $delay = ($notification->additional['delay_m'] * 60) + ($notification->additional['delay_h'] * 3600) + ($notification->additional['delay_d'] * 86400);
-            RegisterJob::dispatch($notification, $customer)->delay(now()->addSeconds($delay));
+            $delay = ((int) ($notification->additional['delay_m'] ?? 0)) * 60
+                    + ((int) ($notification->additional['delay_h'] ?? 0)) * 3600
+                    + ((int) ($notification->additional['delay_d'] ?? 0)) * 86400;
+
+            $runAt = now()->addSeconds($delay);
+            Log::info("Dispatching RegisterJob. Delay: {$delay}s. Will run at: {$runAt}");
+            RegisterJob::dispatch($notification, $customer)->delay($runAt);
         }
     }
 }
