@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('notifications:dispatch-daily')->everyMinute();
         $schedule->command('notifications:dispatch-weekly')->everyMinute();
+        $schedule->command('dispatch:monthly-notifications')->everyMinute();
     }
 
     /**
