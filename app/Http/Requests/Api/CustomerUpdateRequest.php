@@ -22,7 +22,7 @@ class CustomerUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'profy_id' => 'required|integer|exists:customers,profy_id',
+            'profy_id' => 'required|integer',
             'email' => 'required|email',
             'first_name' => 'required|string',
             'last_name' => 'nullable|string',
