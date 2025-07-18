@@ -35,12 +35,12 @@ class CustomerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CustomerUpdateRequest $request): string
+    public function update(CustomerUpdateRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $customer = Customer::where('profy_id', $data['profy_id'])->first();
-        $customer->update($data);
 
-        return response()->json(['message' => 'Customer updated'], 200);
+        Customer::updateOrCreate(['profy_id' => $data['profy_id']], $data);
+
+        return response()->json(['message' => 'Customer updated or created'], 200);
     }
 }

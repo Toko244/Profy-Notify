@@ -39,7 +39,7 @@ class CriteriaQueryService
     {
         return $query->withCount(['orders as filtered_orders_count' => function ($q) use ($params, $except) {
             $q->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
-                $q->where('type', $params['additional']['order_type']);
+                $q->where('type', ucfirst($params['additional']['order_type']));
             })->when(isset($params['additional']['duration']) && $params['additional']['duration'] > 0, function ($q) use ($params) {
                 $q->where('created_at', '>=', Carbon::now()->subDays((int) $params['additional']['duration']));
             })->when($except, function ($q) use ($except) {
@@ -55,7 +55,7 @@ class CriteriaQueryService
         return $query->whereDoesntHave('orders', function ($query) use ($params, $except) {
             $query->where('created_at', '>=', Carbon::now()->subDays($params['additional']['duration']))
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
-                    $q->where('type', $params['additional']['order_type']);
+                    $q->where('type', ucfirst($params['additional']['order_type']));
                 })
                 ->when($except, function ($q) use ($except) {
                     $q->where('id', '!=', $except);
@@ -66,10 +66,10 @@ class CriteriaQueryService
     public function orderNotCompleted(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('created_at', '<=', Carbon::now()->subMinute($params['additional']['duration']))
-                ->whereNull('finished_at')
+            $query->where('created_at', '>=', Carbon::now()->subMinutes($params['additional']['duration']))
+                ->whereNull('service_finished_at')
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
-                    $q->where('type', $params['additional']['order_type']);
+                    $q->where('type', ucfirst($params['additional']['order_type']));
                 })
                 ->when($except, function ($q) use ($except) {
                     $q->where('id', '!=', $except);
@@ -77,12 +77,38 @@ class CriteriaQueryService
         });
     }
 
+    public function moreThanOrderCount(Builder $query, $params, $except = null)
+    {
+        return $query->withCount(['orders as filtered_orders_count' => function ($q) use ($params, $except) {
+            $q->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
+                $q->where('type', ucfirst($params['additional']['order_type']));
+            })->when(isset($params['additional']['duration']) && $params['additional']['duration'] > 0, function ($q) use ($params) {
+                $q->where('created_at', '>=', Carbon::now()->subDays((int) $params['additional']['duration']));
+            })->when($except, function ($q) use ($except) {
+                $q->where('id', '!=', $except);
+            });
+        }])->having('filtered_orders_count', '>', (int) $params['additional']['count']);
+    }
+
+    public function lessThanOrderCount(Builder $query, $params, $except = null)
+    {
+        return $query->withCount(['orders as filtered_orders_count' => function ($q) use ($params, $except) {
+            $q->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
+                $q->where('type', ucfirst($params['additional']['order_type']));
+            })->when(isset($params['additional']['duration']) && $params['additional']['duration'] > 0, function ($q) use ($params) {
+                $q->where('created_at', '>=', Carbon::now()->subDays((int) $params['additional']['duration']));
+            })->when($except, function ($q) use ($except) {
+                $q->where('id', '!=', $except);
+            });
+        }])->having('filtered_orders_count', '<', (int) $params['additional']['count']);
+    }
+
     public function orderPriceMoreThan(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('price', '>=', Carbon::now()->subDays($params['additional']['price']))
+            $query->where('price', '>=', $params['additional']['price'])
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
-                    $q->where('type', $params['additional']['order_type']);
+                    $q->where('type', ucfirst($params['additional']['order_type']));
                 })
                 ->when($except, function ($q) use ($except) {
                     $q->where('id', '!=', $except);
@@ -93,9 +119,9 @@ class CriteriaQueryService
     public function orderPriceLessThan(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('price', '<=', Carbon::now()->subDays($params['additional']['price']))
+            $query->where('price', '<=', $params['additional']['price'])
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
-                    $q->where('type', $params['additional']['order_type']);
+                    $q->where('type', ucfirst($params['additional']['order_type']));
                 })
                 ->when($except, function ($q) use ($except) {
                     $q->where('id', '!=', $except);
