@@ -51,7 +51,7 @@ class OrderController extends Controller
         $order = Order::where('order_number', $data['order_number'])->firstOrFail();
         $order->update($data);
 
-        $this->orderService->orderCreateFinishedJob($order);
+        $this->orderService->orderFinishedJob($order);
         return response()->json([
             'message' => 'Order updated successfully',
         ]);
