@@ -225,7 +225,7 @@
                                 ], key($criterion['id'].'-type'))
                             </div>
 
-                            @if (in_array($criterion['type'], ['has_order', 'does_not_have_order',
+                            @if (in_array($criterion['type'], ['has_order', 'does_not_have_order', 'order_not_completed',
                             'order_price_more_than', 'order_price_less_than', 'more_than_order_count',
                             'less_than_order_count']))
                             <div class="col-md-4">
