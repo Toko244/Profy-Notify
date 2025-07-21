@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\CriteriaType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class CriteriaQueryService
 {
@@ -30,6 +31,14 @@ class CriteriaQueryService
             if (isset($this->criteria[$key])) {
                 $query = $this->{$this->criteria[$key]}($query, $criterion ?? [], $except);
             }
+
+            Log::info('Applying Customer Criteria', [
+                'type' => $key,
+                'params' => $criterion,
+                'except' => $except,
+                'query' => $query,
+                'criteria' => $this->criteria[$key] ?? null,
+            ]);
         }
 
         return $query;
@@ -65,6 +74,19 @@ class CriteriaQueryService
 
     public function orderNotCompleted(Builder $query, $params, $except = null)
     {
+        $duration = (int) ($params['additional']['duration'] ?? 0);
+        $orderType = $params['additional']['order_type'] ?? null;
+        $now = Carbon::now(config('app.timezone'));
+        $cutoff = $now->copy()->subMinutes($duration);
+
+        Log::info('⏱ OrderNotCompleted Debug Info', [
+            'duration' => $duration,
+            'now' => $now->toDateTimeString(),
+            'cutoff' => $cutoff->toDateTimeString(),
+            'order_type' => $orderType,
+            'except_order_id' => $except,
+        ]);
+
         return $query->whereHas('orders', function ($query) use ($params, $except) {
             $query->where('created_at', '>=', Carbon::now()->subMinutes($params['additional']['duration']))
                 ->whereNull('service_finished_at')
