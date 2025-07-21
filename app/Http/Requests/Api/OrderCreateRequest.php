@@ -27,6 +27,7 @@ class OrderCreateRequest extends FormRequest
             'service_finished_at' => 'nullable',
             'price' => 'nullable|numeric',
             'type' => 'required|string|in:Cleaner,Handyman',
+            'status' => 'required|string|in:CREATED,PAID,COMPLETED',
             'created_at' => 'required',
         ];
     }

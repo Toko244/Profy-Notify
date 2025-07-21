@@ -15,6 +15,7 @@ class Order extends Model
         'finished_at',
         'service_finished_at',
         'price',
+        'status',
         'type'
     ];
 
