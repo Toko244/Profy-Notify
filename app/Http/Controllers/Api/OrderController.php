@@ -32,6 +32,7 @@ class OrderController extends Controller
             'service_finished_at' => $data['service_finished_at'] ?? null,
             'price' => $data['price'] ?? null,
             'type' => $data['type'],
+            'status' => $data['status'],
             'created_at' => $data['created_at'],
         ]);
 
