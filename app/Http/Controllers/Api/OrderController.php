@@ -35,8 +35,6 @@ class OrderController extends Controller
             'created_at' => $data['created_at'],
         ]);
 
-        $this->orderService->orderServiceSelectedNotOrderedJob($order);
-
         return response()->json([
             'message' => 'Order created successfully',
         ], 201);
