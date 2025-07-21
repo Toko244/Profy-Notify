@@ -68,6 +68,7 @@ class CriteriaQueryService
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
             $query->where('created_at', '<=', Carbon::now()->subMinutes($params['additional']['duration']))
+                ->where('status', '=', 'CREATED')
                 ->whereNull('service_finished_at')
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                     $q->where('type', ucfirst($params['additional']['order_type']));
