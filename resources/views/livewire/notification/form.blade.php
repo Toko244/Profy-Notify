@@ -73,8 +73,12 @@
                     'option_value' => 'key'], key('notification-category'))
                 </div>
                 <div class="col-md-4">
-                    @livewire('form.checkbox', ['name' => 'active', 'label' => 'Active', 'required' =>
-                    '', 'value' => $notification?->active ?? false])
+                    @livewire('form.checkbox', [
+                        'name' => 'active',
+                        'label' => 'Active',
+                        'required' => false,
+                        'value' => $notification?->active ?? true
+                    ])
                 </div>
             </div>
         </div>

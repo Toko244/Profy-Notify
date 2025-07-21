@@ -35,7 +35,7 @@ class OrderController extends Controller
             'created_at' => $data['created_at'],
         ]);
 
-        $this->orderService->orderCreatedJob($order);
+        $this->orderService->orderServiceSelectedNotOrderedJob($order);
 
         return response()->json([
             'message' => 'Order created successfully',
@@ -51,7 +51,14 @@ class OrderController extends Controller
         $order = Order::where('order_number', $data['order_number'])->firstOrFail();
         $order->update($data);
 
-        $this->orderService->orderFinishedJob($order);
+        if ($order->status === 'PAID') {
+            $this->orderService->orderCreatedJob($order);
+        }
+
+        if ($order->status === 'COMPLETED') {
+            $this->orderService->orderFinishedJob($order);
+        }
+
         return response()->json([
             'message' => 'Order updated successfully',
         ]);
