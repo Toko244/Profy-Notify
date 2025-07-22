@@ -108,7 +108,7 @@ class CriteriaQueryService
     public function orderPriceMoreThan(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('price', '>=', $params['additional']['price'])
+            $query->where('price', '>=', (float) $params['additional']['price'])
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                     $q->where('type', ucfirst($params['additional']['order_type']));
                 })
@@ -121,7 +121,7 @@ class CriteriaQueryService
     public function orderPriceLessThan(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('price', '<=', $params['additional']['price'])
+            $query->where('price', '<=', (float) $params['additional']['price'])
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                     $q->where('type', ucfirst($params['additional']['order_type']));
                 })
