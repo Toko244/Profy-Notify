@@ -56,6 +56,10 @@ class NotificationService
     public function email(): void
     {
         foreach ($this->customers as $customer) {
+            if (empty($customer['allow_notification'])) {
+                continue;
+            }
+
             $email = $customer['email'];
             $mailTemplate = 'mail.' . $this->notification->email_template;
 
@@ -81,6 +85,10 @@ class NotificationService
         $smscoService = new SmscoService();
 
         foreach ($this->customers as $customer) {
+            if (empty($customer['allow_notification'])) {
+                continue;
+            }
+
             $translation = $this->getTranslationForCustomer($customer);
             $content = str_replace(
                 ['{first_name}', '{last_name}'],
@@ -103,6 +111,10 @@ class NotificationService
         $onesignalService = new OneSignalService();
 
         foreach ($this->customers as $customer) {
+            if (empty($customer['allow_notification'])) {
+                continue;
+            }
+
             $translation = $this->getTranslationForCustomer($customer);
             $content = str_replace(
                 ['{first_name}', '{last_name}'],
