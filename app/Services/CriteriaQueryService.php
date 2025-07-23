@@ -38,7 +38,7 @@ class CriteriaQueryService
 
     public function hasOrder(Builder $query, $params, $except = null)
     {
-        return $query->withCount(['orders as filtered_orders_count' => function ($q) use ($params, $except) {
+        $orderFilter = function ($q) use ($params, $except) {
             $q->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                 $q->where('type', ucfirst($params['additional']['order_type']));
             })->when(isset($params['additional']['duration']) && $params['additional']['duration'] > 0, function ($q) use ($params) {
@@ -46,9 +46,15 @@ class CriteriaQueryService
             })->when($except, function ($q) use ($except) {
                 $q->where('id', '!=', $except);
             });
-        }])->when(!empty($params['additional']['count']) && (int) $params['additional']['count'] > 0,
-            fn($q) => $q->having('filtered_orders_count', '=', (int) $params['additional']['count'])
-        );
+        };
+
+        return $query
+            ->whereHas('orders', $orderFilter)
+            ->when(isset($params['additional']['count']) && (int) $params['additional']['count'] > 0, function ($q) use ($orderFilter, $params) {
+                $count = (int) $params['additional']['count'];
+                $q->withCount(['orders as filtered_orders_count' => $orderFilter])
+                ->having('filtered_orders_count', '=', $count);
+            });
     }
 
     public function doesNotHaveOrder(Builder $query, $params, $except = null)
