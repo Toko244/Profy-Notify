@@ -37,16 +37,13 @@ class NotificationService
     protected function getTranslationForCustomer(array $customer): array
     {
         $locale = strtolower($customer['language'] ?? 'en');
-        Log::info('Customer info', [
-            'language' => $customer['language'],
-            'locale' => $locale,
-        ]);
+
         $languageId = self::LANGUAGE_LOCALE_TO_ID[$locale] ?? self::DEFAULT_LANGUAGE_ID;
 
         $translation = $this->notification->translations
             ->where('language_id', $languageId)
             ->first();
-        Log::info($translation);
+
         return [
             'subject' => $translation ? $translation->subject : '',
             'content' => $translation ? $translation->content : '',
@@ -57,6 +54,7 @@ class NotificationService
     {
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
+                Log::info("Not sending notification to customer due to disabled notifications.");
                 continue;
             }
 
@@ -75,7 +73,7 @@ class NotificationService
                 'content' => $content,
                 'mailTemplate' => $mailTemplate,
             ];
-            Log::info($mailData);
+
             Mail::to($email)->send(new DefaultMail($mailData));
         }
     }
@@ -86,6 +84,7 @@ class NotificationService
 
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
+                Log::info("Not sending notification to customer due to disabled notifications.");
                 continue;
             }
 
@@ -95,7 +94,7 @@ class NotificationService
                 [$customer['first_name'], $customer['last_name']],
                 $translation['content']
             );
-            Log::info($content);
+
             $result = $smscoService->send($customer['phone'], $content);
 
             if ($result['success']) {
@@ -112,6 +111,7 @@ class NotificationService
 
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
+                Log::info("Not sending notification to customer due to disabled notifications.");
                 continue;
             }
 
