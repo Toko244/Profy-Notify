@@ -73,7 +73,7 @@ class CriteriaQueryService
     public function orderNotCompleted(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('created_at', '<=', Carbon::now()->subMinutes($params['additional']['duration']))
+            $query->where('created_at', '<=', Carbon::now()->subDays($params['additional']['duration']))
                 ->where('status', '=', 'CREATED')
                 ->whereNull('service_finished_at')
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
