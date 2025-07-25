@@ -25,7 +25,7 @@ class OrderUpdateRequest extends FormRequest
             'order_number' => 'required|numeric',
             'service_finished_at' => 'nullable',
             'price' => 'nullable|numeric',
-            'status' => 'required|string|in:CREATED,PAID,COMPLETED',
+            'status' => 'required|string|in:CREATED,PAID,COMPLETED,CANCELLED',
             'type' => 'required|string|in:Cleaner,Handyman',
         ];
     }
