@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use app\Enums\OrderStatus;
+use App\Enums\OrderStatus;
 
 class CriteriaQueryService
 {
