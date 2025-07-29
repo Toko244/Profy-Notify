@@ -61,7 +61,9 @@ class CriteriaQueryService
     {
         return $query->whereDoesntHave('orders', function ($query) use ($params, $except) {
             $query->where('status', '!=', OrderStatus::CANCELLED->value)
-                ->where('created_at', '>=', Carbon::now()->subDays($params['additional']['duration']))
+                ->when(isset($params['additional']['duration']) && $params['additional']['duration'] > 0, function ($q) use ($params) {
+                    $q->where('created_at', '>=', Carbon::now()->subDays((int) $params['additional']['duration']));
+                })
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                     $q->where('type', ucfirst($params['additional']['order_type']));
                 })
@@ -74,9 +76,11 @@ class CriteriaQueryService
     public function orderNotCompleted(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
-            $query->where('created_at', '<=', Carbon::now()->subDays($params['additional']['duration']))
-                ->where('status', '=', OrderStatus::CREATED->value)
+            $query->where('status', '=', OrderStatus::CREATED->value)
                 ->whereNull('service_finished_at')
+                ->when(isset($params['additional']['duration']) && $params['additional']['duration'] > 0, function ($q) use ($params) {
+                    $q->where('created_at', '>=', Carbon::now()->subDays((int) $params['additional']['duration']));
+                })
                 ->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                     $q->where('type', ucfirst($params['additional']['order_type']));
                 })
