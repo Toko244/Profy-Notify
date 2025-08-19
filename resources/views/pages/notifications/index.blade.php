@@ -87,7 +87,7 @@
                                     <form action="{{ route('notifications.destroy', ['notification' => $notification]) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button style="padding: 0 3px 0 3px"  type="submit" class="btn btn-link text-danger"><i class="bi bi-trash"></i></button>
+                                        <button style="padding: 0 3px 0 3px"  type="submit" class="btn btn-link text-danger" onclick="alert('Are you sure you want to delete this notification?')"><i class="bi bi-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
