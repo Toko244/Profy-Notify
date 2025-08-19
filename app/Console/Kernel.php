@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
+use App\Jobs\DeleteNotificationLogsJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Cache;
 
 class Kernel extends ConsoleKernel
 {
@@ -15,6 +17,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('notifications:dispatch-daily')->everyMinute();
         $schedule->command('notifications:dispatch-weekly')->everyMinute();
         $schedule->command('dispatch:monthly-notifications')->everyMinute();
+
+        $schedule->job(new DeleteNotificationLogsJob)->everySixHours()->when(function() {
+            return now()->diffInHours(Cache::get('last_notification_cleanup', now()->subHours(24))) >= 24;
+        })->then(function() {
+            Cache::put('last_notification_cleanup', now());
+        });
     }
 
     /**
