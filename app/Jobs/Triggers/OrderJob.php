@@ -34,7 +34,7 @@ class OrderJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $orderCheck = Order::find($this->order->id);
+        $orderCheck = Order::query()->find($this->order->id);
         if ($this->notification->trigger === 'service_selected_not_ordered' && $orderCheck->status !== 'CREATED') {
             return;
         }
