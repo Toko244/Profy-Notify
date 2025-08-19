@@ -84,10 +84,10 @@
                                 </td>
                                 <td style="text-align: center">
                                     <a style="padding: 0 3px 0 3px"  href="{{ route('notifications.edit', ['notification' => $notification]) }}"><i class="bi bi-pencil-fill"></i></a>
-                                    <form action="{{ route('notifications.destroy', ['notification' => $notification]) }}" method="POST" class="d-inline">
+                                    <form action="{{ route('notifications.destroy', ['notification' => $notification]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this notification?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button style="padding: 0 3px 0 3px"  type="submit" class="btn btn-link text-danger" onclick="alert('Are you sure you want to delete this notification?')"><i class="bi bi-trash"></i></button>
+                                        <button style="padding: 0 3px 0 3px"  type="submit" class="btn btn-link text-danger"><i class="bi bi-trash"></i></button>
                                     </form>
                                 </td>
                             </tr>
