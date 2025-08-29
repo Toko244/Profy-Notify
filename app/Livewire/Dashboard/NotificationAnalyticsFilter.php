@@ -25,13 +25,19 @@ class NotificationAnalyticsFilter extends Component
         $query = NotificationAnalytic::with('notification');
 
         switch ($this->filter) {
+            case 'total':
+                // no scope -> return all analytics
+                break;
+
             case 'week':
                 $query->forWeek();
                 break;
+
             case 'month':
                 $query->forMonth();
                 break;
-            default:
+
+            default: // today
                 $query->forDay(Carbon::today());
                 break;
         }

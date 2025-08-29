@@ -1,6 +1,9 @@
 <div>
     <!-- Filter buttons -->
     <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-sm {{ $filter === 'total' ? 'btn-primary' : 'btn-outline-primary' }}"
+                wire:click="$set('filter', 'total')">
+            Total
         <button class="btn btn-sm {{ $filter === 'today' ? 'btn-primary' : 'btn-outline-primary' }}"
                 wire:click="$set('filter', 'today')">
             Today
