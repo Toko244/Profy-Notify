@@ -43,4 +43,9 @@ class Notification extends Model
     {
         return $this->belongsTo(NotificationCategory::class, 'category_id', 'id');
     }
+
+    public function analytics()
+    {
+        return $this->hasMany(NotificationAnalytic::class);
+    }
 }

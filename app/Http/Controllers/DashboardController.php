@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Notification;
+use App\Models\NotificationAnalytic;
 use App\Models\Order;
 
 class DashboardController extends Controller
@@ -18,6 +19,16 @@ class DashboardController extends Controller
         $active_notifications   = Notification::where('active', true)->count();
         $inactive_notifications = Notification::where('active', false)->count();
 
+        $analytics = NotificationAnalytic::with('notification')
+            ->get()
+            ->map(function ($analytic) {
+                return [
+                    'notification' => $analytic->notification->title ?? 'N/A',
+                    'total_sent'   => $analytic->total_sent,
+                    'channels'     => $analytic->channel_breakdown ?? [],
+                ];
+            });
+
         return view('pages.dashboard.index', compact(
             'total_customers',
             'total_orders',
@@ -25,7 +36,8 @@ class DashboardController extends Controller
             'finished_orders',
             'total_notifications',
             'active_notifications',
-            'inactive_notifications'
+            'inactive_notifications',
+            'analytics'
         ));
     }
 }

@@ -14,6 +14,7 @@
     .collapse-toggle[aria-expanded="true"] .bi {
         transform: rotate(180deg);
     }
+
 </style>
 @endsection
 
@@ -38,7 +39,8 @@
                         <h6 class="text-muted mb-1">Orders</h6>
                         <h3 class="mb-0">{{ $total_orders }}</h3>
                     </div>
-                    <button class="btn btn-sm btn-light collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#orderDetails" aria-expanded="false" aria-controls="orderDetails">
+                    <button class="btn btn-sm btn-light collapse-toggle" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#orderDetails" aria-expanded="false" aria-controls="orderDetails">
                         <i class="bi bi-chevron-down"></i>
                     </button>
                 </div>
@@ -68,7 +70,8 @@
                         <h6 class="text-muted mb-1">Notifications</h6>
                         <h3 class="mb-0">{{ $total_notifications }}</h3>
                     </div>
-                    <button class="btn btn-sm btn-light collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#notificationDetails" aria-expanded="false" aria-controls="notificationDetails">
+                    <button class="btn btn-sm btn-light collapse-toggle" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#notificationDetails" aria-expanded="false" aria-controls="notificationDetails">
                         <i class="bi bi-chevron-down"></i>
                     </button>
                 </div>
@@ -88,5 +91,10 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="text-muted mb-0">Notification Analytics</h6>
+    </div>
+
+    @livewire('dashboard.notification-analytics-filter')
 </div>
 @endsection

@@ -19,6 +19,17 @@ class OrderJob implements ShouldQueue
 
     private QueryService $queryService;
     private NotificationService $notificationService;
+
+    public const CHANNEL_EMAIL = 'email';
+    public const CHANNEL_SMS   = 'sms';
+    public const CHANNEL_PUSH  = 'push';
+
+    private const CHANNEL_MAP = [
+        'email' => self::CHANNEL_EMAIL,
+        'sms'   => self::CHANNEL_SMS,
+        'push'  => self::CHANNEL_PUSH,
+    ];
+
     /**
      * Create a new job instance.
      */
@@ -45,7 +56,27 @@ class OrderJob implements ShouldQueue
         foreach ($this->notification->notification_type as $type) {
             if (method_exists($notificationService, $type)) {
                 $notificationService->{$type}();
+                $this->updateAnalytics($type, count($customers));
             }
         }
+    }
+
+    private function updateAnalytics(string $channelType, int $sentCount = 1): void
+    {
+        $channel = self::CHANNEL_MAP[$channelType] ?? $channelType;
+
+        $analytic = $this->notification->analytics()
+            ->firstOrCreate(
+                ['date' => now()->toDateString()],
+                ['total_sent' => 0, 'channel_breakdown' => []]
+            );
+
+        $analytic->total_sent += $sentCount;
+
+        $breakdown = $analytic->channel_breakdown ?? [];
+        $breakdown[$channel] = ($breakdown[$channel] ?? 0) + $sentCount;
+
+        $analytic->channel_breakdown = $breakdown;
+        $analytic->save();
     }
 }
