@@ -9,6 +9,8 @@ use Livewire\Component;
 class NotificationAnalyticsFilter extends Component
 {
     public string $filter = 'today';
+    public ?string $startDate = null;
+    public ?string $endDate = null;
 
     public function render()
     {
@@ -20,25 +22,37 @@ class NotificationAnalyticsFilter extends Component
         ]);
     }
 
+    public function updated($propertyName)
+    {
+        if ($propertyName === 'startDate' || $propertyName === 'endDate') {
+            if ($this->startDate && $this->endDate && $this->filter === 'custom') {
+                $this->render();
+            }
+        }
+    }
+
     private function getAnalytics()
     {
         $query = NotificationAnalytic::with('notification');
 
         switch ($this->filter) {
             case 'total':
-                // no scope -> return all analytics
                 break;
 
             case 'week':
-                $query->forWeek();
+                $query = $query->forWeek();
                 break;
 
             case 'month':
-                $query->forMonth();
+                $query = $query->forMonth();
                 break;
 
-            default: // today
-                $query->forDay(Carbon::today());
+            case 'custom':
+                $query = $query->forCustom($this->startDate, $this->endDate);
+                break;
+
+            default:
+                $query->forDay(Carbon::now());
                 break;
         }
 

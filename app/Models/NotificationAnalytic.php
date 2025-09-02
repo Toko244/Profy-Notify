@@ -49,6 +49,22 @@ class NotificationAnalytic extends Model
     }
 
     /**
+     * Filter analytics for the custom dates.
+    */
+    public function scopeForCustom($query, $start_date, $end_date)
+    {
+        if ($start_date && $end_date) {
+            $start = Carbon::parse($start_date)->toDateString();
+            $end = Carbon::parse($end_date)->toDateString();
+
+            return $query->whereDate('date', '>=', $start)
+                        ->whereDate('date', '<=', $end);
+        }
+
+        return $query;
+    }
+
+    /**
      * Optional: Increment sent count and update channel breakdown.
      */
     public function incrementSent(string $channel)

@@ -2,21 +2,25 @@
     <!-- Filter buttons -->
     <div class="d-flex gap-2 mb-3">
         <button class="btn btn-sm {{ $filter === 'total' ? 'btn-primary' : 'btn-outline-primary' }}"
-                wire:click="$set('filter', 'total')">
-            Total
+                wire:click="$set('filter', 'total')">Total</button>
         <button class="btn btn-sm {{ $filter === 'today' ? 'btn-primary' : 'btn-outline-primary' }}"
-                wire:click="$set('filter', 'today')">
-            Today
-        </button>
+                wire:click="$set('filter', 'today')">Today</button>
         <button class="btn btn-sm {{ $filter === 'week' ? 'btn-primary' : 'btn-outline-primary' }}"
-                wire:click="$set('filter', 'week')">
-            Last Week
-        </button>
+                wire:click="$set('filter', 'week')">Last Week</button>
         <button class="btn btn-sm {{ $filter === 'month' ? 'btn-primary' : 'btn-outline-primary' }}"
-                wire:click="$set('filter', 'month')">
-            Last Month
-        </button>
+                wire:click="$set('filter', 'month')">Last Month</button>
+        <button class="btn btn-sm {{ $filter === 'custom' ? 'btn-primary' : 'btn-outline-primary' }}"
+                wire:click="$set('filter', 'custom')">Custom</button>
     </div>
+
+    @if($filter === 'custom')
+        <div class="col-lg-2">
+            <div class="d-flex gap-2 mb-3">
+                <input type="date" wire:model.live="startDate" class="form-control form-control-sm" placeholder="Start date">
+                <input type="date" wire:model.live="endDate" class="form-control form-control-sm" placeholder="End date">
+            </div>
+        </div>
+    @endif
 
     <div class="card shadow-sm border-0">
         <div class="card-body">
