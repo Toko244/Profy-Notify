@@ -153,6 +153,17 @@
                     key('notification-email-template-field'))
                 </div>
             </div>
+
+            <div class="row mt-4" x-show="Array.isArray($wire.type) && $wire.type.includes('push')" x-transition>
+            <div class="col-md-6">
+                @livewire('form.checkbox', [
+                    'name' => 'send_sms_if_push_disabled',
+                    'label' => 'Send SMS if push notification is disabled',
+                    'required' => false,
+                    'value' => $notification?->send_sms_if_push_disabled ?? false
+                ])
+            </div>
+        </div>
         </div>
     </div>
 

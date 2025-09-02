@@ -20,6 +20,7 @@ class Notification extends Model
         'subject',
         'content',
         'active',
+        'send_sms_if_push_disabled',
         'additional'
     ];
 

@@ -124,8 +124,29 @@ class NotificationService
         $sentCount = 0;
 
         foreach ($this->customers as $customer) {
+
+            if (empty($customer['allow_notification']) && $this->notification->send_sms_if_push_disabled) {
+                $translation = $this->getTranslationForCustomer($customer);
+
+                $content = str_replace(
+                    ['{first_name}', '{last_name}'],
+                    [$customer['first_name'], $customer['last_name']],
+                    trim($translation['subject'] . ' - ' . $translation['content'])
+                );
+
+                $smscoService = new SmscoService();
+                $result = $smscoService->send($customer['phone'], $content);
+
+                if ($result['success']) {
+                    $sentCount++;
+                } else {
+                    Log::error("Failed to send SMS fallback to {$customer['phone']}: {$result['message']}");
+                }
+
+                continue;
+            }
+
             if (empty($customer['allow_notification'])) {
-                Log::info("Not sending notification to customer due to disabled notifications.");
                 continue;
             }
 

@@ -40,6 +40,7 @@ class NotificationRequest extends FormRequest
             'notification_type.*' => 'required|string',
             'email_template' => 'nullable|string',
             'active' => 'nullable|boolean',
+            'send_sms_if_push_disabled' => 'nullable|boolean',
             'criterion' => 'nullable|array',
             'criterion.*.type' => 'required|string',
             'criterion.*.additional' => 'nullable',
@@ -48,6 +49,7 @@ class NotificationRequest extends FormRequest
             'translations' => 'required|array',
             'translations.*.language_id' => 'required|exists:languages,id',
             'translations.*.content' => 'required|string',
+
         ];
 
         if ($this->requiresSubject) {
