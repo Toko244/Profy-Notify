@@ -50,8 +50,10 @@ class NotificationService
         ];
     }
 
-    public function email(): void
+    public function email(): int
     {
+        $sentCount = 0;
+
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
                 Log::info("Not sending notification to customer due to disabled notifications.");
@@ -74,13 +76,21 @@ class NotificationService
                 'mailTemplate' => $mailTemplate,
             ];
 
-            Mail::to($email)->send(new DefaultMail($mailData));
+            try {
+                Mail::to($email)->send(new DefaultMail($mailData));
+                $sentCount++;
+            } catch (\Throwable $e) {
+                Log::error("Failed to send email to {$email}: " . $e->getMessage());
+            }
         }
+        Log::info("customers count is: " . $sentCount);
+        return $sentCount;
     }
 
-    public function sms(): void
+    public function sms(): int
     {
         $smscoService = new SmscoService();
+        $sentCount = 0;
 
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
@@ -98,16 +108,20 @@ class NotificationService
             $result = $smscoService->send($customer['phone'], $content);
 
             if ($result['success']) {
-                echo "SMS sent! Used credits: {$result['used_credits']}, SMS ID: {$result['sms_id']}";
+                $sentCount++;
             } else {
-                echo "Failed to send SMS: {$result['message']}";
+                Log::error("Failed to send SMS to {$customer['phone']}: {$result['message']}");
             }
         }
+        Log::info("customers count is: " . $sentCount);
+
+        return $sentCount;
     }
 
-    public function push(): void
+    public function push(): int
     {
         $onesignalService = new OneSignalService();
+        $sentCount = 0;
 
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
@@ -122,7 +136,7 @@ class NotificationService
                 $translation['content']
             );
 
-            $onesignalService->send(
+            $result = $onesignalService->send(
                 [$customer['onesignal_player_id']],
                 $translation['subject'],
                 $content,
@@ -131,6 +145,14 @@ class NotificationService
                     'item_type' => 'product',
                 ]
             );
+
+            if (!isset($result['errors'])) {
+                $sentCount++;
+            } else {
+                Log::error("Failed to send PUSH to {$customer}: {$result}");
+            }
         }
+
+        return $sentCount;
     }
 }
