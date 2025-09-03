@@ -50,10 +50,68 @@ class NotificationService
         ];
     }
 
-    public function email(): int
+    /**
+     * Sends an SMS to a single customer and logs the result.
+     *
+     * @param array $customer
+     * @param string $content
+     * @return bool True on success, false on failure.
+     */
+    private function sendSmsForCustomer(array $customer, string $content): bool
+    {
+        $smscoService = new SmscoService();
+        $result = $smscoService->send($customer['phone'], $content);
+
+        if ($result['success']) {
+            return true;
+        } else {
+            Log::error("Failed to send SMS to {$customer['phone']}: {$result['message']}");
+            return false;
+        }
+    }
+
+    /**
+     * Sends a push notification to a single customer and logs the result.
+     *
+     * @param array $customer
+     * @param array $translation
+     * @return bool True on success, false on failure.
+     */
+    private function sendPushForCustomer(array $customer, array $translation): bool
+    {
+        $onesignalService = new OneSignalService();
+        $content = str_replace(
+            ['{first_name}', '{last_name}'],
+            [$customer['first_name'], $customer['last_name']],
+            $translation['content']
+        );
+
+        $subject = $translation['subject'] ?? '';
+
+        $result = $onesignalService->send(
+            [$customer['onesignal_player_id']],
+            $subject,
+            $content,
+            [
+                'notification_id' => $this->notification->id,
+                'item_type' => 'product',
+            ]
+        );
+
+        if (!isset($result['errors'])) {
+            return true;
+        } else {
+            Log::error("Failed to send PUSH to {$customer['email']}: " . json_encode($result));
+            return false;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function email(): array
     {
         $sentCount = 0;
-
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
                 Log::info("Not sending notification to customer due to disabled notifications.");
@@ -84,13 +142,16 @@ class NotificationService
             }
         }
         Log::info("customers count is: " . $sentCount);
-        return $sentCount;
+        return ['email' => $sentCount];
     }
 
-    public function sms(): int
+    /**
+     * @return array
+     */
+    public function sms(): array
     {
-        $smscoService = new SmscoService();
-        $sentCount = 0;
+        $smsSentCount = 0;
+        $pushSentCount = 0;
 
         foreach ($this->customers as $customer) {
             if (empty($customer['allow_notification'])) {
@@ -98,6 +159,14 @@ class NotificationService
                 continue;
             }
 
+            if (empty($customer['phone'])) {
+                $translation = $this->getTranslationForCustomer($customer);
+                if ($this->sendPushForCustomer($customer, $translation)) {
+                    $pushSentCount++;
+                }
+                continue;
+            }
+
             $translation = $this->getTranslationForCustomer($customer);
             $content = str_replace(
                 ['{first_name}', '{last_name}'],
@@ -105,44 +174,35 @@ class NotificationService
                 $translation['content']
             );
 
-            $result = $smscoService->send($customer['phone'], $content);
-
-            if ($result['success']) {
-                $sentCount++;
-            } else {
-                Log::error("Failed to send SMS to {$customer['phone']}: {$result['message']}");
+            if ($this->sendSmsForCustomer($customer, $content)) {
+                $smsSentCount++;
             }
         }
-        Log::info("customers count is: " . $sentCount);
+        Log::info("customers count is: " . ($smsSentCount + $pushSentCount));
 
-        return $sentCount;
+        return ['sms' => $smsSentCount, 'push' => $pushSentCount];
     }
 
-    public function push(): int
+    /**
+     * @return array
+     */
+    public function push(): array
     {
-        $onesignalService = new OneSignalService();
-        $sentCount = 0;
+        $pushSentCount = 0;
+        $smsSentCount = 0;
 
         foreach ($this->customers as $customer) {
-
             if (empty($customer['allow_notification']) && $this->notification->send_sms_if_push_disabled) {
                 $translation = $this->getTranslationForCustomer($customer);
-
                 $content = str_replace(
                     ['{first_name}', '{last_name}'],
                     [$customer['first_name'], $customer['last_name']],
                     trim($translation['subject'] . ' - ' . $translation['content'])
                 );
 
-                $smscoService = new SmscoService();
-                $result = $smscoService->send($customer['phone'], $content);
-
-                if ($result['success']) {
-                    $sentCount++;
-                } else {
-                    Log::error("Failed to send SMS fallback to {$customer['phone']}: {$result['message']}");
+                if ($this->sendSmsForCustomer($customer, $content)) {
+                    $smsSentCount++;
                 }
-
                 continue;
             }
 
@@ -151,29 +211,11 @@ class NotificationService
             }
 
             $translation = $this->getTranslationForCustomer($customer);
-            $content = str_replace(
-                ['{first_name}', '{last_name}'],
-                [$customer['first_name'], $customer['last_name']],
-                $translation['content']
-            );
-
-            $result = $onesignalService->send(
-                [$customer['onesignal_player_id']],
-                $translation['subject'],
-                $content,
-                [
-                    'notification_id' => $this->notification->id,
-                    'item_type' => 'product',
-                ]
-            );
-
-            if (!isset($result['errors'])) {
-                $sentCount++;
-            } else {
-                Log::error("Failed to send PUSH to {$customer}: {$result}");
+            if ($this->sendPushForCustomer($customer, $translation)) {
+                $pushSentCount++;
             }
         }
 
-        return $sentCount;
+        return ['push' => $pushSentCount, 'sms' => $smsSentCount];
     }
 }

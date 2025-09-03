@@ -55,10 +55,12 @@ class OrderJob implements ShouldQueue
 
         foreach ($this->notification->notification_type as $type) {
             if (method_exists($notificationService, $type)) {
-                $sendCount = $notificationService->{$type}();
+                $sentCounts = $notificationService->{$type}();
 
-                if ($sendCount > 0) {
-                    $this->updateAnalytics($type, $sendCount);
+                foreach ($sentCounts as $channelType => $sentCount) {
+                    if ($sentCount > 0) {
+                        $this->updateAnalytics($channelType, $sentCount);
+                    }
                 }
             }
         }
