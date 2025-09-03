@@ -197,7 +197,7 @@ class NotificationService
                 $content = str_replace(
                     ['{first_name}', '{last_name}'],
                     [$customer['first_name'], $customer['last_name']],
-                    trim($translation['subject'] . ' - ' . $translation['content'])
+                    trim((string)$translation['subject'] . ' - ' . (string)$translation['content'])
                 );
 
                 if ($this->sendSmsForCustomer($customer, $content)) {
