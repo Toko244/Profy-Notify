@@ -35,24 +35,41 @@ class NotificationAnalyticsFilter extends Component
     {
         $query = NotificationAnalytic::with('notification');
 
+        $applyAggregation = function ($query) {
+            return $query->selectRaw(
+                'notification_id,
+                SUM(total_sent) as total_sent,
+                MAX(channel_breakdown) as channel_breakdown'
+            )->groupBy('notification_id');
+        };
+
         switch ($this->filter) {
             case 'total':
+                $query = $applyAggregation($query);
                 break;
 
             case 'week':
-                $query = $query->forWeek();
+                $query = $applyAggregation(
+                    $query->forWeek()
+                );
                 break;
 
             case 'month':
-                $query = $query->forMonth();
+                $query = $applyAggregation(
+                    $query->forMonth()
+                );
                 break;
 
             case 'custom':
-                $query = $query->forCustom($this->startDate, $this->endDate);
+                $query = $applyAggregation(
+                    $query->forCustom($this->startDate, $this->endDate)
+                );
                 break;
 
-            default:
-                $query->forDay(Carbon::now());
+            default: // today
+                $query = $applyAggregation(
+                    $query->forDay(Carbon::now())
+                );
                 break;
         }
 
@@ -60,7 +77,9 @@ class NotificationAnalyticsFilter extends Component
             return [
                 'notification' => $analytic->notification->title ?? 'N/A',
                 'total_sent'   => $analytic->total_sent,
-                'channels'     => $analytic->channel_breakdown ?? [],
+                'channels'     => is_string($analytic->channel_breakdown)
+                                    ? json_decode($analytic->channel_breakdown, true) ?? []
+                                    : ($analytic->channel_breakdown ?? []),
             ];
         });
     }
