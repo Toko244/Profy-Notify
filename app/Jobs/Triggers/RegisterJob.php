@@ -51,12 +51,24 @@ class RegisterJob implements ShouldQueue
 
             foreach ($this->notification->notification_type as $type) {
                 if (method_exists($notificationService, $type)) {
-                    Log::info("Calling notification method: {$type}");
+                    Log::info("Sending {$type} notification", [
+                        'notification_id' => $this->notification->id,
+                        'customer_ids'    => collect($customers)->pluck('id')->all(),
+                        'channels'        => $this->notification->notification_type,
+                    ]);
+
                     $sentCounts = $notificationService->{$type}();
 
                     foreach ($sentCounts as $channelType => $sentCount) {
                         if ($sentCount > 0) {
                             $this->updateAnalytics($channelType, $sentCount);
+
+                            Log::info('Notification sent', [
+                                'notification_id' => $this->notification->id,
+                                'channel'         => $channelType,
+                                'sent_count'      => $sentCount,
+                                'customer_ids'    => collect($customers)->pluck('id')->all(),
+                            ]);
                         }
                     }
                 }

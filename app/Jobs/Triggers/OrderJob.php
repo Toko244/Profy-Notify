@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class OrderJob implements ShouldQueue
 {
@@ -55,11 +56,26 @@ class OrderJob implements ShouldQueue
 
         foreach ($this->notification->notification_type as $type) {
             if (method_exists($notificationService, $type)) {
+                Log::info("Sending {$type} notification", [
+                    'notification_id' => $this->notification->id,
+                    'order_id'        => $this->order->id,
+                    'customer_ids' => collect($customers)->pluck('id')->all(),
+                    'channels'        => $this->notification->notification_type,
+                ]);
+
                 $sentCounts = $notificationService->{$type}();
 
                 foreach ($sentCounts as $channelType => $sentCount) {
                     if ($sentCount > 0) {
                         $this->updateAnalytics($channelType, $sentCount);
+
+                        Log::info('Notification sent', [
+                            'notification_id' => $this->notification->id,
+                            'order_id'        => $this->order->id,
+                            'channel'         => $channelType,
+                            'sent_count'      => $sentCount,
+                            'customer_ids' => collect($customers)->pluck('id')->all(),
+                        ]);
                     }
                 }
             }
