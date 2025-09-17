@@ -27,7 +27,7 @@ class DeleteNotificationLogsJob implements ShouldQueue
      */
     public function handle()
     {
-        $threshold = Carbon::now()->subHours(24);
+        $threshold = Carbon::now()->subHours(48);
 
         DB::table('notification_logs')
             ->where('created_at', '<', $threshold)
