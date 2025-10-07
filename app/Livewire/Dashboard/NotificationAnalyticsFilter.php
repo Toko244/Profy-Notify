@@ -35,52 +35,52 @@ class NotificationAnalyticsFilter extends Component
     {
         $query = NotificationAnalytic::with('notification');
 
-        $applyAggregation = function ($query) {
-            return $query->selectRaw(
-                'notification_id,
-                SUM(total_sent) as total_sent,
-                MAX(channel_breakdown) as channel_breakdown'
-            )->groupBy('notification_id');
-        };
-
         switch ($this->filter) {
             case 'total':
-                $query = $applyAggregation($query);
+
                 break;
 
             case 'week':
-                $query = $applyAggregation(
-                    $query->forWeek()
-                );
+                $query = $query->forWeek();
                 break;
 
             case 'month':
-                $query = $applyAggregation(
-                    $query->forMonth()
-                );
+                $query = $query->forMonth();
                 break;
 
             case 'custom':
-                $query = $applyAggregation(
-                    $query->forCustom($this->startDate, $this->endDate)
-                );
+                $query = $query->forCustom($this->startDate, $this->endDate);
                 break;
 
-            default: // today
-                $query = $applyAggregation(
-                    $query->forDay(Carbon::now())
-                );
+            case 'today': // today
+                $query = $query->forDay(Carbon::now());
                 break;
         }
 
-        return $query->get()->map(function ($analytic) {
+        $allAnalytics = $query->get();
+
+        $aggregatedAnalytics = $allAnalytics->groupBy('notification_id')->map(function ($dailyAnalytics) {
+            $firstAnalytic = $dailyAnalytics->first();
+            $totalSentSum = $dailyAnalytics->sum('total_sent');
+            $summedChannels = [];
+
+            foreach ($dailyAnalytics as $analytic) {
+                $channels = is_string($analytic->channel_breakdown)
+                    ? json_decode($analytic->channel_breakdown, true) ?? []
+                    : ($analytic->channel_breakdown ?? []);
+
+                foreach ($channels as $channel => $count) {
+                    $summedChannels[$channel] = ($summedChannels[$channel] ?? 0) + $count;
+                }
+            }
+
             return [
-                'notification' => $analytic->notification->title ?? 'N/A',
-                'total_sent'   => $analytic->total_sent,
-                'channels'     => is_string($analytic->channel_breakdown)
-                                    ? json_decode($analytic->channel_breakdown, true) ?? []
-                                    : ($analytic->channel_breakdown ?? []),
+                'notification' => $firstAnalytic->notification->title ?? 'N/A',
+                'total_sent'   => $totalSentSum,
+                'channels'     => $summedChannels,
             ];
-        });
+        })->values(); // Reset keys
+
+        return $aggregatedAnalytics;
     }
 }
