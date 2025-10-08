@@ -7,32 +7,44 @@ use App\Jobs\Triggers\OrderJob;
 use App\Models\Notification;
 use App\Models\NotificationLog;
 use App\Models\Order;
+use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
     public function serviceSelectedNotOrderedJob(Order $order): void
     {
-        $notifications = Notification::where('trigger', Trigger::SERVICE_SELECTED_NOT_ORDERED)->where('active', true)->get();
+        $notifications = Notification::where('trigger', Trigger::SERVICE_SELECTED_NOT_ORDERED)
+            ->where('active', true)
+            ->get();
+
         $notifications->load('criteria');
+
         foreach ($notifications as $notification) {
-            $existingLog = NotificationLog::where('notification_id', $notification->id)
-                ->where('customer_id', $order->customer_id)
-                ->where('trigger', Trigger::SERVICE_SELECTED_NOT_ORDERED)
-                ->where('created_at', '>=', now()->subHours(48))
-                ->first();
+            DB::transaction(function () use ($notification, $order) {
+                $existingLog = NotificationLog::where('notification_id', $notification->id)
+                    ->where('customer_id', $order->customer_id)
+                    ->where('trigger', Trigger::SERVICE_SELECTED_NOT_ORDERED)
+                    ->where('created_at', '>=', now()->subHours(48))
+                    ->lockForUpdate()
+                    ->first();
 
-            if ($existingLog) {
-                continue;
-            }
+                if ($existingLog) {
+                    return;
+                }
 
-            $delay = ($notification->additional['delay_m'] * 60) + ($notification->additional['delay_h'] * 3600) + ($notification->additional['delay_d'] * 86400);
-            OrderJob::dispatch($notification, $order)->delay(now()->addSeconds($delay));
+                NotificationLog::create([
+                    'notification_id' => $notification->id,
+                    'customer_id' => $order->customer_id,
+                    'trigger' => Trigger::SERVICE_SELECTED_NOT_ORDERED,
+                    'order_id' => $order->id,
+                ]);
 
-            NotificationLog::create([
-                'notification_id' => $notification->id,
-                'customer_id' => $order->customer_id,
-                'trigger' => Trigger::SERVICE_SELECTED_NOT_ORDERED,
-            ]);
+                $delay = ($notification->additional['delay_m'] * 60)
+                    + ($notification->additional['delay_h'] * 3600)
+                    + ($notification->additional['delay_d'] * 86400);
+
+                OrderJob::dispatch($notification, $order)->delay(now()->addSeconds($delay));
+            });
         }
     }
 
