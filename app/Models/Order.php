@@ -28,4 +28,9 @@ class Order extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(OrderReview::class);
+    }
 }
