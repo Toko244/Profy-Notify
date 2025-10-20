@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_reviews', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
             $table->renameColumn('order_id', 'order_number');
         });
     }
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('order_reviews', function (Blueprint $table) {
             $table->renameColumn('order_number', 'order_id');
+            $table->integer('order_id')->change();
         });
     }
 };

@@ -31,6 +31,6 @@ class Order extends Model
 
     public function reviews()
     {
-        return $this->hasMany(OrderReview::class);
+        return $this->hasMany(OrderReview::class, 'order_number', 'order_number');
     }
 }

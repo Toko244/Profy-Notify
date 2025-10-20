@@ -10,7 +10,7 @@ class OrderReview extends Model
     use HasFactory;
 
     public $fillable = [
-        'order_id',
+        'order_number',
         'text',
         'rating',
         'role',
@@ -18,6 +18,6 @@ class OrderReview extends Model
 
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class, 'order_number', 'order_number');
     }
 }
