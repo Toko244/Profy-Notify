@@ -11,7 +11,7 @@ class OrderReviewRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,10 +22,10 @@ class OrderReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id' => 'required|integer|exists:orders,id',
+            'order_number' => 'required|numeric|exists:orders,order_number',
             'text' => 'nullable|string',
-            'rating' => 'nullable|integer|min:1|max:5',
-            'role' => 'nullable|string|in:customer,service_provider',
+            'rating' => 'nullable|integer',
+            'role' => 'nullable|string',
         ];
     }
 }
