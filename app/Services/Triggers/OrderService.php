@@ -71,7 +71,7 @@ class OrderService
 
     public function orderNotRatedJob(Order $order): void
     {
-        $notifications = Notification::where('trigger', Trigger::ORDER_RATED)->where('active', true)->get();
+        $notifications = Notification::where('trigger', Trigger::ORDER_NOT_RATED)->where('active', true)->get();
         $notifications->load('criteria');
         foreach ($notifications as $notification) {
             $delay = ($notification->additional['delay_m'] * 60) + ($notification->additional['delay_h'] * 3600) + ($notification->additional['delay_d'] * 86400);
