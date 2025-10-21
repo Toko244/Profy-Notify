@@ -42,4 +42,15 @@ class QueryService
         $query = $this->criteriaQueryService->applyCustomerCriteria($query, $notification->criteria->toArray(), $order->id);
         return $query->get()->toArray();
     }
+
+    public function orderNotRatedQuery(Order $order, Notification $notification)
+    {
+        $notification->load('criteria');
+        $query = Customer::whereHas('orders', function ($query) use ($order) {
+            $query->where('order_number', $order->order_number)
+                ->whereDoesntHave('reviews');
+        });
+        $query = $this->criteriaQueryService->applyCustomerCriteria($query, $notification->criteria->toArray(), $order->id);
+        return $query->get()->toArray();
+    }
 }

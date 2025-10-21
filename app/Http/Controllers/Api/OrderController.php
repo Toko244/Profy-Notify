@@ -58,6 +58,7 @@ class OrderController extends Controller
 
         if ($order->status === 'COMPLETED') {
             $this->orderService->orderFinishedJob($order);
+            $this->orderService->orderNotRatedJob($order);
         }
 
         return response()->json([
