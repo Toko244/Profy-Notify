@@ -151,8 +151,8 @@ class CriteriaQueryService
 
     public function orderRatedMoreThan(Builder $query, $params, $except = null)
     {
-        Log::info('Applying orderRatedMoreThan criteria', ['params' => $params, 'except' => $except]);
         return $query->whereHas('orders', function ($query) use ($params, $except) {
+            $query->when($except, fn($q) => $q->where('id', $except));
             $query->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                 $q->where('type', ucfirst($params['additional']['order_type']));
             });
@@ -165,6 +165,7 @@ class CriteriaQueryService
     public function orderRatedLessThan(Builder $query, $params, $except = null)
     {
         return $query->whereHas('orders', function ($query) use ($params, $except) {
+            $query->when($except, fn($q) => $q->where('id', $except));
             $query->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
                 $q->where('type', ucfirst($params['additional']['order_type']));
             });
