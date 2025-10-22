@@ -5,6 +5,7 @@ namespace App\Services\Triggers;
 use App\Enums\Trigger;
 use App\Jobs\Triggers\OrderJob;
 use App\Jobs\Triggers\OrderNotRatedJob;
+use App\Jobs\Triggers\OrderRatedJob;
 use App\Models\Notification;
 use App\Models\NotificationLog;
 use App\Models\Order;
@@ -76,6 +77,16 @@ class OrderService
         foreach ($notifications as $notification) {
             $delay = ($notification->additional['delay_m'] * 60) + ($notification->additional['delay_h'] * 3600) + ($notification->additional['delay_d'] * 86400);
             OrderNotRatedJob::dispatch($notification, $order)->delay(now()->addSeconds($delay));
+        }
+    }
+
+    public function orderRatedJob(Order $order): void
+    {
+        $notifications = Notification::where('trigger', Trigger::ORDER_RATED)->where('active', true)->get();
+        $notifications->load('criteria');
+        foreach ($notifications as $notification) {
+            $delay = ($notification->additional['delay_m'] * 60) + ($notification->additional['delay_h'] * 3600) + ($notification->additional['delay_d'] * 86400);
+            OrderRatedJob::dispatch($notification, $order)->delay(now()->addSeconds($delay));
         }
     }
 }

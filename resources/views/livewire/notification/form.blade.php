@@ -238,7 +238,7 @@
 
                             @if (in_array($criterion['type'], ['has_order', 'does_not_have_order', 'order_not_completed',
                             'order_price_more_than', 'order_price_less_than', 'more_than_order_count',
-                            'less_than_order_count']))
+                            'less_than_order_count', 'order_rated_more_than', 'order_rated_less_than']))
                             <div class="col-md-4">
                                 @livewire('form.select', [
                                 'name' => 'criterion['.$index.'][additional][order_type]',
@@ -284,6 +284,13 @@
                                         'required' => 'required',
                                         'value' => $criterion['additional']['count'] ?? 0
                                     ], key($criterion['id'].'-count'))
+                                @elseif (in_array($criterion['type'], ['order_rated_more_than', 'order_rated_less_than']))
+                                    @livewire('form.number', [
+                                        'name' => 'criterion['.$index.'][additional][rating]',
+                                        'label' => 'Rating (Stars)',
+                                        'required' => 'required',
+                                        'value' => $criterion['additional']['rating'] ?? 0
+                                    ], key($criterion['id'].'-rating'))
                                 @else
                                     @livewire('form.number', [
                                         'name' => 'criterion['.$index.'][additional][duration]',

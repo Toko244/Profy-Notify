@@ -52,17 +52,15 @@ class OrderController extends Controller
         $order = Order::where('order_number', $data['order_number'])->firstOrFail();
         $order->update($data);
 
-        if ($order->status === 'PAID') {
-            $this->orderService->orderCreatedJob($order);
-        }
-
-        if ($order->status === 'WAITING_CONFIRMATION') {
-            $this->orderService->orderNotRatedJob($order);
-        }
-
-        if ($order->status === 'COMPLETED') {
-            $this->orderService->orderFinishedJob($order);
-        }
+        match ($order->status) {
+            'PAID' => $this->orderService->orderCreatedJob($order),
+            'WAITING_CONFIRMATION' => $this->orderService->orderNotRatedJob($order),
+            'COMPLETED' => [
+                $this->orderService->orderFinishedJob($order),
+                $this->orderService->orderRatedJob($order),
+            ],
+            default => null,
+        };
 
         return response()->json([
             'message' => 'Order updated successfully',

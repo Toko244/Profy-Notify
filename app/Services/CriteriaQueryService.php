@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\OrderStatus;
+use Illuminate\Support\Facades\Log;
 
 class CriteriaQueryService
 {
@@ -20,6 +21,8 @@ class CriteriaQueryService
             'order_price_less_than' => 'orderPriceLessThan',
             'more_than_order_count' => 'moreThanOrderCount',
             'less_than_order_count' => 'lessThanOrderCount',
+            'order_rated_more_than' => 'orderRatedMoreThan',
+            'order_rated_less_than' => 'orderRatedLessThan',
         ];
     }
 
@@ -143,6 +146,31 @@ class CriteriaQueryService
                 ->when($except, function ($q) use ($except) {
                     $q->where('id', '!=', $except);
                 });
+        });
+    }
+
+    public function orderRatedMoreThan(Builder $query, $params, $except = null)
+    {
+        Log::info('Applying orderRatedMoreThan criteria', ['params' => $params, 'except' => $except]);
+        return $query->whereHas('orders', function ($query) use ($params, $except) {
+            $query->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
+                $q->where('type', ucfirst($params['additional']['order_type']));
+            });
+            $query->whereHas('reviews', function ($q) use ($params) {
+                $q->where('rating', '>', (int) $params['additional']['rating']);
+            });
+        });
+    }
+
+    public function orderRatedLessThan(Builder $query, $params, $except = null)
+    {
+        return $query->whereHas('orders', function ($query) use ($params, $except) {
+            $query->when(in_array($params['additional']['order_type'], ['handyman', 'cleaner']), function ($q) use ($params) {
+                $q->where('type', ucfirst($params['additional']['order_type']));
+            });
+            $query->whereHas('reviews', function ($q) use ($params) {
+                $q->where('rating', '<', (int) $params['additional']['rating']);
+            });
         });
     }
 }
