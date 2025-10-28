@@ -26,7 +26,7 @@ class OrderService
                 $existingLog = NotificationLog::where('notification_id', $notification->id)
                     ->where('customer_id', $order->customer_id)
                     ->where('trigger', Trigger::SERVICE_SELECTED_NOT_ORDERED)
-                    ->where('created_at', '>=', now()->subHours(48))
+                    ->where('created_at', '>=', now()->subMonth())
                     ->lockForUpdate()
                     ->first();
 
