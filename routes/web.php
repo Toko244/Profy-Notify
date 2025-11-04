@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SymlinkController;
-use App\Models\Customer;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,17 +15,12 @@ use App\Models\Customer;
 |
 */
 
-
-require __DIR__ . '/web/auth.php';
-require __DIR__ . '/web/dashboard.php';
-
-Route::get('testing', function (){
-    $customer = Customer::first();
-
-    $registerService = new \App\Services\Triggers\RegisterService();
-    $registerService->createJob($customer);
-
-    return 'done';
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect('/admin');
+    } else {
+        return redirect('/admin/login');
+    }
 });
 
 Route::get('/link/{any}', [SymlinkController::class, 'redirect'])->name('symlinks.redirect');
