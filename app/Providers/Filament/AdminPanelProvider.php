@@ -28,7 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('Profy Notify')
-            ->brandLogo(asset('logo.png'))
+            ->brandLogo(asset('logo green.png'))
             ->favicon(asset('favicon.ico'))
             ->colors([
                 'primary' => Color::Blue,
