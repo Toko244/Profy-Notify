@@ -10,6 +10,10 @@ class Notification extends Model
 {
     use SoftDeletes, Translatable;
 
+    protected $primaryKey = 'id'; // ✅ default
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
         'category_id',
         'title',
