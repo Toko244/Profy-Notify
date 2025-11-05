@@ -350,7 +350,6 @@ class NotificationResource extends Resource
                 Forms\Components\TextInput::make('additional.duration')
                     ->label('Period')
                     ->numeric()
-                    ->required()
                     ->suffix('days')
                     ->prefixIcon('heroicon-o-calendar'),
             ],

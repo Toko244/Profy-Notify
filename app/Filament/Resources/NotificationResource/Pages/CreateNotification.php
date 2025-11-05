@@ -443,7 +443,6 @@ class CreateNotification extends CreateRecord
                     ->label('Days')
                     ->numeric()
                     ->default(0)
-                    ->required()
                     ->prefixIcon('heroicon-o-calendar')
                     ->suffix('days')
                     ->helperText('Days to wait'),
@@ -452,7 +451,6 @@ class CreateNotification extends CreateRecord
                     ->label('Hours')
                     ->numeric()
                     ->default(0)
-                    ->required()
                     ->prefixIcon('heroicon-o-clock')
                     ->suffix('hours')
                     ->helperText('Hours to wait'),
@@ -461,7 +459,6 @@ class CreateNotification extends CreateRecord
                     ->label('Minutes')
                     ->numeric()
                     ->default(0)
-                    ->required()
                     ->prefixIcon('heroicon-o-clock')
                     ->suffix('minutes')
                     ->helperText('Minutes to wait'),
@@ -589,7 +586,6 @@ class CreateNotification extends CreateRecord
                 Forms\Components\TextInput::make('additional.duration')
                     ->label('Time Period')
                     ->numeric()
-                    ->required()
                     ->minValue(1)
                     ->prefixIcon('heroicon-o-calendar')
                     ->suffix('days')
